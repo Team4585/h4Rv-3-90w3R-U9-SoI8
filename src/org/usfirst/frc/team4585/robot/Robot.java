@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -21,10 +22,16 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	private DifferentialDrive m_robotDrive
+	private DifferentialDrive robotDrive
 			= new DifferentialDrive(new Spark(8), new Spark(9));
-	private Joystick m_stick = new Joystick(0);
-	private Timer m_timer = new Timer();
+	private Joystick stick = new Joystick(0);
+	private Timer timer = new Timer();
+	
+	private AnalogSonar sonar = new AnalogSonar(0);
+	
+	private SmartDashboard dash = new SmartDashboard();
+	
+	
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -32,6 +39,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		
 	}
 
 	/**
@@ -39,8 +47,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		m_timer.reset();
-		m_timer.start();
+		timer.reset();
+		timer.start();
 	}
 
 	/**
@@ -48,12 +56,19 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		/*
 		// Drive for 2 seconds
-		if (m_timer.get() < 2.0) {
-			m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
+		if (timer.get() < 2.0) {
+			robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
 		} else {
-			m_robotDrive.stopMotor(); // stop robot
-		}
+			robotDrive.stopMotor(); // stop robot
+		}*/
+		
+		dash.putNumber("cm: ",sonar.getCentimeters());
+		dash.putNumber("mm: ",sonar.getMillimeters());
+		dash.putNumber("in: ",sonar.getInches());
+		dash.putNumber("volts: ",sonar.getVoltage());
+		dash.putNumber("value: ",sonar.getValue());
 	}
 
 	/**
@@ -68,7 +83,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		m_robotDrive.arcadeDrive(-m_stick.getRawAxis(1), m_stick.getRawAxis(2));
+		robotDrive.arcadeDrive(-stick.getRawAxis(1), stick.getRawAxis(2));
+		
+		dash.putNumber("cm: ",sonar.getCentimeters());
+		dash.putNumber("mm: ",sonar.getMillimeters());
+		dash.putNumber("in: ",sonar.getInches());
+		dash.putNumber("volts: ",sonar.getVoltage());
+		dash.putNumber("value: ",sonar.getValue());
 	}
 
 	/**

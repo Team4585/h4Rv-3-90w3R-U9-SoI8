@@ -7,6 +7,9 @@
 
 package org.usfirst.frc.team4585.robot;
 
+import org.usfirst.frc.team4585.model.AnalogSonar;
+import org.usfirst.frc.team4585.model.Chassis;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
@@ -21,16 +24,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
+
 public class Robot extends IterativeRobot {
-	private DifferentialDrive robotDrive
-			= new DifferentialDrive(new Spark(8), new Spark(9));
-	private Joystick stick = new Joystick(0);
-	private Timer timer = new Timer();
 	
-	private AnalogSonar sonar = new AnalogSonar(0);
+	private final int JOYSTICK_PORT = 0;
 	
-	private SmartDashboard dash = new SmartDashboard();
 	
+	//private Timer timer = new Timer();
+	private Joystick joy = new Joystick(JOYSTICK_PORT);
+	private Chassis chassis = new Chassis(joy);
 	
 
 	/**
@@ -47,8 +49,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		timer.reset();
-		timer.start();
+		//timer.reset();
+		//timer.start();
 	}
 
 	/**
@@ -64,11 +66,11 @@ public class Robot extends IterativeRobot {
 			robotDrive.stopMotor(); // stop robot
 		}*/
 		
-		dash.putNumber("cm: ",sonar.getCentimeters());
-		dash.putNumber("mm: ",sonar.getMillimeters());
-		dash.putNumber("in: ",sonar.getInches());
-		dash.putNumber("volts: ",sonar.getVoltage());
-		dash.putNumber("value: ",sonar.getValue());
+		SmartDashboard.putNumber("cm: ",sonar.getCentimeters());
+		SmartDashboard.putNumber("mm: ",sonar.getMillimeters());
+		SmartDashboard.putNumber("in: ",sonar.getInches());
+		SmartDashboard.putNumber("volts: ",sonar.getVoltage());
+		SmartDashboard.putNumber("value: ",sonar.getValue());
 	}
 
 	/**
@@ -83,13 +85,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		robotDrive.arcadeDrive(-stick.getRawAxis(1), stick.getRawAxis(2));
+		chassis.doTeleop();
 		
-		dash.putNumber("cm: ",sonar.getCentimeters());
-		dash.putNumber("mm: ",sonar.getMillimeters());
-		dash.putNumber("in: ",sonar.getInches());
-		dash.putNumber("volts: ",sonar.getVoltage());
-		dash.putNumber("value: ",sonar.getValue());
+		SmartDashboard.putNumber("cm: ",sonar.getCentimeters());
+		SmartDashboard.putNumber("mm: ",sonar.getMillimeters());
+		SmartDashboard.putNumber("in: ",sonar.getInches());
+		SmartDashboard.putNumber("volts: ",sonar.getVoltage());
+		SmartDashboard.putNumber("value: ",sonar.getValue());
 	}
 
 	/**

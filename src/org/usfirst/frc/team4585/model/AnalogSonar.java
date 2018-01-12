@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4585.robot;
+package org.usfirst.frc.team4585.model;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 
@@ -37,7 +37,7 @@ public class AnalogSonar{
 	}
 	
 
-	double getMillimeters() {
+	public double getMillimeters() {
 		return input.getAverageVoltage() * millimetersPerVolt * correctionCoeff;
 	}
 

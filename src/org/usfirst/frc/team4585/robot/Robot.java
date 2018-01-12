@@ -1,9 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 
 package org.usfirst.frc.team4585.robot;
 
@@ -30,9 +24,9 @@ public class Robot extends IterativeRobot {
 	private final int JOYSTICK_PORT = 0;
 	
 	
-	//private Timer timer = new Timer();
+	private Timer timer = new Timer();
 	private Joystick joy = new Joystick(JOYSTICK_PORT);
-	private Chassis chassis = new Chassis(joy);
+	private Chassis chassis = new Chassis(joy, timer);
 	
 
 	/**
@@ -58,19 +52,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		/*
-		// Drive for 2 seconds
-		if (timer.get() < 2.0) {
-			robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-		} else {
-			robotDrive.stopMotor(); // stop robot
-		}*/
+		chassis.doAuto();
 		
-		SmartDashboard.putNumber("cm: ",sonar.getCentimeters());
-		SmartDashboard.putNumber("mm: ",sonar.getMillimeters());
-		SmartDashboard.putNumber("in: ",sonar.getInches());
-		SmartDashboard.putNumber("volts: ",sonar.getVoltage());
-		SmartDashboard.putNumber("value: ",sonar.getValue());
 	}
 
 	/**
@@ -87,11 +70,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		chassis.doTeleop();
 		
-		SmartDashboard.putNumber("cm: ",sonar.getCentimeters());
-		SmartDashboard.putNumber("mm: ",sonar.getMillimeters());
-		SmartDashboard.putNumber("in: ",sonar.getInches());
-		SmartDashboard.putNumber("volts: ",sonar.getVoltage());
-		SmartDashboard.putNumber("value: ",sonar.getValue());
+		
 	}
 
 	/**

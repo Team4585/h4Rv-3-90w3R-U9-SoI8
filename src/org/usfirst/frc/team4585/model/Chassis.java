@@ -15,6 +15,7 @@ public class Chassis {
 	private DifferentialDrive robotDrive 
 			= new DifferentialDrive(new Spark(RIGHT_DRIVE_PORT), new Spark(LEFT_DRIVE_PORT));
 	private AnalogSonar sonar = new AnalogSonar(SONAR_PORT);
+	private
 	
 	Joystick joy;
 	Timer timer;
@@ -26,8 +27,9 @@ public class Chassis {
 	}
 	
 	public void doTeleop() {
-		robotDrive.arcadeDrive(joy.getRawAxis(1), joy.getRawAxis(2));
+		robotDrive.arcadeDrive(-joy.getRawAxis(1), joy.getRawAxis(2));
 		
+		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));
 		SmartDashboard.putNumber("cm: ",sonar.getCentimeters());
 		SmartDashboard.putNumber("mm: ",sonar.getMillimeters());
 		SmartDashboard.putNumber("in: ",sonar.getInches());

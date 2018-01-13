@@ -43,8 +43,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		//timer.reset();
-		//timer.start();
+		timer.reset();
+		timer.start();
 	}
 
 	/**

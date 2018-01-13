@@ -1,8 +1,7 @@
 
 package org.usfirst.frc.team4585.robot;
 
-import org.usfirst.frc.team4585.model.AnalogSonar;
-import org.usfirst.frc.team4585.model.Chassis;
+import org.usfirst.frc.team4585.model.*;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
@@ -27,6 +26,7 @@ public class Robot extends IterativeRobot {
 	private Timer timer = new Timer();
 	private Joystick joy = new Joystick(JOYSTICK_PORT);
 	private Chassis chassis = new Chassis(joy, timer);
+	private Arm arm = new Arm(joy);
 	
 
 	/**
@@ -43,6 +43,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		chassis.autoInit();
+		
 		timer.reset();
 		timer.start();
 	}
@@ -61,6 +63,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopInit() {
+		chassis.teleopInit();
 	}
 
 	/**
@@ -69,7 +72,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		chassis.doTeleop();
-		
+		arm.doTeleop();
 		
 	}
 

@@ -9,17 +9,17 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Chassis implements HuskyClass {
+public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	private final int LEFT_ENCODER_PORT_A = 0;
 	private final int LEFT_ENCODER_PORT_B = 1;
-	private final int RIGHT_DRIVE_PORT = 8;
-	private final int LEFT_DRIVE_PORT = 9;
+	private static final int RIGHT_DRIVE_PORT = 8;
+	private static final int LEFT_DRIVE_PORT = 9;
 	private final int SONAR_PORT = 0;
-	private final double DISTANCE_PER_PULSE = -0.089;
+	private final double DISTANCE_PER_PULSE = -0.0022606; //meters
 	
-	private DifferentialDrive robotDrive 
-			= new DifferentialDrive(new Spark(RIGHT_DRIVE_PORT), new Spark(LEFT_DRIVE_PORT));
+	//private DifferentialDrive robotDrive 
+	//		= new DifferentialDrive(new Spark(RIGHT_DRIVE_PORT), new Spark(LEFT_DRIVE_PORT));
 	
 	private AnalogSonar sonar = new AnalogSonar(SONAR_PORT);
 	private BuiltInAccelerometer accel;
@@ -27,6 +27,7 @@ public class Chassis implements HuskyClass {
 	private Encoder encoder = new Encoder(LEFT_ENCODER_PORT_A, LEFT_ENCODER_PORT_B);
 	
 	private double angle;
+	private double maxVelocity = 0;
 	
 	
 	
@@ -34,12 +35,16 @@ public class Chassis implements HuskyClass {
 	Timer timer;
 	
 	public Chassis(Joystick J, Timer T) {
+		super(new Spark(RIGHT_DRIVE_PORT), new Spark(LEFT_DRIVE_PORT));
+		
 		joy = J;
 		timer = T;
 		accel = new BuiltInAccelerometer();
 		gyro = new ADXRS450_Gyro();
 		encoder.setDistancePerPulse(DISTANCE_PER_PULSE);
+		
 	}
+	
 	
 	@Override
 	public void teleopInit() {
@@ -48,9 +53,16 @@ public class Chassis implements HuskyClass {
 	
 	@Override
 	public void doTeleop() {
-		robotDrive.arcadeDrive(-joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5), joy.getRawAxis(2) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
 		
-		SmartDashboard.putNumber("inches:", encoder.getDistance());
+		if (encoder.getRate() > maxVelocity) {
+			maxVelocity = encoder.getRate();
+		}
+		
+		
+		arcadeDrive(-joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5), joy.getRawAxis(2) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
+		
+		SmartDashboard.putNumber("meters:", encoder.getDistance());
+		SmartDashboard.putNumber("max velocity:", maxVelocity);
 		
 		SmartDashboard.putNumber("X", accel.getX());
 		SmartDashboard.putNumber("Y", accel.getY());
@@ -75,9 +87,9 @@ public class Chassis implements HuskyClass {
 		
 		
 		if (timer.get() > 0) {
-			robotDrive.arcadeDrive(0, (angle - gyro.getAngle())/10); // drive forwards half speed
+			arcadeDrive(0, (angle - gyro.getAngle())/10); // drive forwards half speed
 		} else {
-			robotDrive.stopMotor(); // stop robot
+			stopMotor(); // stop robot
 		}
 		
 		SmartDashboard.putNumber("inches:", encoder.getDistance());

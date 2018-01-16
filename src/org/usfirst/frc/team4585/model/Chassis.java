@@ -25,9 +25,11 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	private BuiltInAccelerometer accel;
 	private  ADXRS450_Gyro gyro;
 	private Encoder encoder = new Encoder(LEFT_ENCODER_PORT_A, LEFT_ENCODER_PORT_B);
+	private AccelerationController driveAccel = new AccelerationController(1, 1, 1);
 	
 	private double angle;
 	private double maxVelocity = 0;
+	private double distance;
 	
 	
 	
@@ -79,6 +81,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 		gyro.reset();
 		angle = 90;
 		encoder.reset();
+		distance = 3;
 	}
 	
 	@Override
@@ -87,7 +90,8 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 		
 		
 		if (timer.get() > 0) {
-			arcadeDrive(0, (angle - gyro.getAngle())/10); // drive forwards half speed
+			//arcadeDrive(0, (angle - gyro.getAngle())/10);
+			arcadeDrive(driveAccel.getMapedVelocity(encoder.getRate(), distance - encoder.getDistance()) , 0);
 		} else {
 			stopMotor(); // stop robot
 		}

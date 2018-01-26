@@ -30,6 +30,10 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	private double angle;
 	private double maxVelocity = 0;
 	private double distance;
+	private double maxTurnVelocity = 0;
+	
+	private double maxAccel = 0;
+	private double minAccel = 0;
 	
 	
 	
@@ -60,11 +64,25 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 			maxVelocity = encoder.getRate();
 		}
 		
+		if (gyro.getRate() > maxTurnVelocity) {
+			maxTurnVelocity = gyro.getRate();
+		}
+		if (accel.getX() > maxAccel) {
+			maxAccel = accel.getX();
+		}
+		if (accel.getX() < minAccel) {
+			minAccel = accel.getX();
+		}
+		
 		
 		arcadeDrive(-joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5), joy.getRawAxis(2) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
 		
 		SmartDashboard.putNumber("meters:", encoder.getDistance());
 		SmartDashboard.putNumber("max velocity:", maxVelocity);
+		SmartDashboard.putNumber("max turn velocity:", maxTurnVelocity);
+		SmartDashboard.putNumber("max X accel:", maxAccel);
+		SmartDashboard.putNumber("min X accel:", minAccel);
+		
 		
 		SmartDashboard.putNumber("X", accel.getX());
 		SmartDashboard.putNumber("Y", accel.getY());
@@ -81,7 +99,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 		gyro.reset();
 		angle = 90;
 		encoder.reset();
-		distance = 3;
+		distance = 1;
 	}
 	
 	@Override
@@ -91,7 +109,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 		
 		if (timer.get() > 0) {
 			//arcadeDrive(0, (angle - gyro.getAngle())/10);
-			arcadeDrive(driveAccel.getMapedVelocity(encoder.getRate(), distance - encoder.getDistance()) , 0);
+			arcadeDrive(driveAccel.getMapedVelocity(0.0, distance, timer.get()), 0);
 		} else {
 			stopMotor(); // stop robot
 		}
@@ -107,5 +125,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));
 		SmartDashboard.putNumber("in: ",sonar.getInches());
 	}
+	
+	
 	
 }

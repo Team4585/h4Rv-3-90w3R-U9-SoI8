@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -28,6 +27,7 @@ public class Robot extends IterativeRobot {
 	private Joystick joy = new Joystick(JOYSTICK_PORT);
 	private Chassis chassis = new Chassis(joy, timer);
 	private Arm arm = new Arm(joy);
+	private Claw claw = new Claw(joy);
 	
 
 	/**
@@ -65,6 +65,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		chassis.teleopInit();
+		claw.teleopInit();
 	}
 
 	/**
@@ -74,7 +75,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		chassis.doTeleop();
 		arm.doTeleop();
-		
+		claw.doTeleop();
 	}
 
 	/**

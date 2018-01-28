@@ -54,4 +54,16 @@ public class Arm implements HuskyClass {
 
 	}
 
+	@Override
+	public double[] getInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void giveInfo(double[] info) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -9,4 +9,8 @@ public interface HuskyClass {
 	public void autoInit();
 	
 	public void doAuto();
+	
+	public double[] getInfo();
+	
+	public void giveInfo(double[] info);
 }

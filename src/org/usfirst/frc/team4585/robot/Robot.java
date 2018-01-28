@@ -2,13 +2,12 @@
 package org.usfirst.frc.team4585.robot;
 
 import org.usfirst.frc.team4585.model.*;
+import org.usfirst.frc.team4585.model.auto.GhostController;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 
 /**
@@ -29,6 +28,8 @@ public class Robot extends IterativeRobot {
 	private Chassis chassis = new Chassis(joy, timer);
 	private Arm arm = new Arm(joy);
 	private Claw claw = new Claw(joy);
+	private PositionTracker tracker = new PositionTracker(timer);
+	private GhostController marcus = new GhostController(chassis, arm, claw);
 	
 
 	/**
@@ -45,7 +46,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		marcus.autoInit();
 		chassis.autoInit();
+		arm.autoInit();
+		claw.autoInit();
+		tracker.autoInit();
 		
 		timer.reset();
 		timer.start();
@@ -56,7 +61,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		marcus.doAuto();
 		chassis.doAuto();
+		arm.doAuto();
+		claw.doAuto();
+		tracker.doAuto();
 		
 	}
 
@@ -66,7 +75,10 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopInit() {
 		chassis.teleopInit();
+		arm.teleopInit();
 		claw.teleopInit();
+		tracker.teleopInit();
+		
 	}
 
 	/**
@@ -77,6 +89,7 @@ public class Robot extends IterativeRobot {
 		chassis.doTeleop();
 		arm.doTeleop();
 		claw.doTeleop();
+		tracker.doTeleop();
 	}
 
 	/**

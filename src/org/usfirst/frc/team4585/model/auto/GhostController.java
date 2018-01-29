@@ -12,9 +12,10 @@ public class GhostController implements HuskyClass {
 	
 	private int counter;
 	
-	private double chassisInfo;
-	private double armInfo;
-	private double clawInfo;
+	private double[] chassisInfo;
+	private double[] armInfo;
+	private double[] clawInfo;
+	private double[] posInfo;
 	
 	private Chassis chassis;
 	private Arm arm;
@@ -82,10 +83,13 @@ public class GhostController implements HuskyClass {
 	
 	public boolean driveTo(double[] I) {
 		double[] buffer = {0, 0};
-		double[] posInfo = tracker.getInfo();
+		double targAngle;
+		posInfo = tracker.getInfo();
+		
+		targAngle = Math.toDegrees(Math.atan2(I[0] - posInfo[0], I[1] - posInfo[1]));
 		
 		buffer[0] = 0.5;
-		buffer[1] = posInfo[2] / 10;
+		buffer[1] = (targAngle - posInfo[2]) / 10;
 		
 		chassis.giveInfo(buffer);
 		return buffer[0] == I[0] && buffer[1] == I[1];

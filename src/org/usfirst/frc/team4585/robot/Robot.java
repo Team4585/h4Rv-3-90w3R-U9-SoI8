@@ -29,7 +29,7 @@ public class Robot extends IterativeRobot {
 	private Arm arm = new Arm(joy);
 	private Claw claw = new Claw(joy);
 	private PositionTracker tracker = new PositionTracker(timer);
-	private GhostController marcus = new GhostController(chassis, arm, claw);
+	private GhostController marcus = new GhostController(chassis, arm, claw, tracker);
 	
 
 	/**

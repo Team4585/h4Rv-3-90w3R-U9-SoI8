@@ -19,16 +19,18 @@ public class GhostController implements HuskyClass {
 	private Chassis chassis;
 	private Arm arm;
 	private Claw claw;
+	private PositionTracker tracker;
 	
 	
-	public GhostController(Chassis Ch, Arm A, Claw Cl) {
+	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T) {
 		chassis = Ch;
 		arm = A;
 		claw = Cl;
+		tracker = T;
 		
-		taskList.add(new AutoTask(TaskType.drive, new double[] {0.5, 0}));
-		taskList.add(new AutoTask(TaskType.drive, new double[] {0, 0.5}));
-		taskList.add(new AutoTask(TaskType.drive, new double[] {0.5, 0}));
+		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
+		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
+		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
 	}
 	
 	@Override
@@ -53,8 +55,10 @@ public class GhostController implements HuskyClass {
 	public void doAuto() {
 		switch(taskList.get(counter).getType()){
 		
-		case drive:
-			doDrive(taskList.get(counter).getInfo());
+		case goTo:
+			if(driveTo(taskList.get(counter).getInfo())) {
+				counter++;
+			}
 			break;
 		
 		default:
@@ -76,8 +80,15 @@ public class GhostController implements HuskyClass {
 		
 	}
 	
-	public void doDrive(double[] I) {
-		chassis.giveInfo(I);
+	public boolean driveTo(double[] I) {
+		double[] buffer = {0, 0};
+		double[] posInfo = tracker.getInfo();
+		
+		buffer[0] = 0.5;
+		buffer[1] = posInfo[2] / 10;
+		
+		chassis.giveInfo(buffer);
+		return buffer[0] == I[0] && buffer[1] == I[1];
 	}
 
 }

@@ -28,6 +28,12 @@ public class PositionTracker implements HuskyClass {
 	private double yPos;
 	private double accelVelocity;
 	
+	private double[][] fieldMap = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+								   {0},
+								   {0},
+								   {0},
+								   {0}};
+	
 	public PositionTracker(Timer T) {
 		accel = new BuiltInAccelerometer();
 		gyro = new ADXRS450_Gyro();
@@ -103,25 +109,37 @@ public class PositionTracker implements HuskyClass {
 		accelVelocity = 0;
 		gyro.reset();
 		
+		rightEncoder.reset();
 		leftEncoder.reset();
-
 	}
 
 	@Override
 	public void doAuto() {
+		dt = timer.get() - oldTime;
 		
-		accelVelocity += accel.getX() * (timer.get() - oldTime);
+		accelVelocity += accel.getX() * dt * 32.175197; // gs to feet per second^2
 		
-		SmartDashboard.putNumber("meters:", leftEncoder.getDistance());
-		SmartDashboard.putNumber("accelVelocity:", accelVelocity * 9.807);
+		xPos += Math.cos(Math.toRadians(gyro.getAngle())) * accelVelocity * dt;
+		xPos += Math.sin(Math.toRadians(gyro.getAngle())) * accelVelocity * dt;
+		
+		//robot_position_x += cos(robot_heading) * robot_velocity * dt;
+		//robot_position_y += sin(robot_heading) * robot_velocity * dt;
+		
+		SmartDashboard.putNumber("X pos", xPos);
+		SmartDashboard.putNumber("Y pos", yPos);
+		
+		SmartDashboard.putNumber("meters:", (rightEncoder.getDistance() + leftEncoder.getDistance()) / 2);
+		SmartDashboard.putNumber("right:", rightEncoder.getDistance());
+		SmartDashboard.putNumber("left:", leftEncoder.getDistance());
+		SmartDashboard.putNumber("accelVelocity:", accelVelocity);
+		
 		
 		oldTime = timer.get();
 	}
 
 	@Override
 	public double[] getInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return new double[] {xPos, yPos, gyro.getAngle()};
 	}
 
 	@Override

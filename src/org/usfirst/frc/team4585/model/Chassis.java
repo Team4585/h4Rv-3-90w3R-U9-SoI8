@@ -51,7 +51,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	@Override
 	public void doAuto() {
-		arcadeDrive(info[0], 0);
+		arcadeDrive(info[0], info[1]);
 		
 		
 		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));

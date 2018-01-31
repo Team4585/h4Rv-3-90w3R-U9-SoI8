@@ -12,8 +12,8 @@ public class PositionTracker implements HuskyClass {
 	private final int LEFT_ENCODER_PORT_B = 1;
 	private final int RIGHT_ENCODER_PORT_A = 2;
 	private final int RIGHT_ENCODER_PORT_B = 3;
-	private final double LEFT_DISTANCE_PER_PULSE = -0.00741666666667; //feet
-	private final double RIGHT_DISTANCE_PER_PULSE = -0.00741666666667; //feet
+	private final double LEFT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
+	private final double RIGHT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
 	
 	private Encoder leftEncoder = new Encoder(LEFT_ENCODER_PORT_A, LEFT_ENCODER_PORT_B);
 	private Encoder rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A, RIGHT_ENCODER_PORT_B);
@@ -26,9 +26,13 @@ public class PositionTracker implements HuskyClass {
 	
 	private double xPos;
 	private double yPos;
-	private double accelVelocity;
+	private double accelXW;
+	private double accelYW;
+	private double velX;
+	private double velY;
+	private double encoderVelocity;
 	
-	private double[][] fieldMap = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
+	private int[][] fieldMap = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
 								   {0},
 								   {0},
 								   {0},
@@ -48,7 +52,7 @@ public class PositionTracker implements HuskyClass {
 		xPos = 0;
 		yPos = 0;
 		
-		accelVelocity = 0;
+		//accelVelocity = 0;
 		gyro.reset();
 		
 		rightEncoder.reset();
@@ -58,11 +62,19 @@ public class PositionTracker implements HuskyClass {
 	@Override
 	public void doTeleop() {
 		dt = timer.get() - oldTime;
+		//accelXVelocity += accel.getY() * dt * 32.175197; // gs to feet per second^2
+		//accelYVelocity += accel.getX() * dt * 32.175197; // backwards on purpose
 		
-		accelVelocity += accel.getX() * dt * 32.175197; // gs to feet per second^2
+		accelXW = Math.cos(Math.toRadians(gyro.getAngle())) * accel.getX() * 32.175197;
+		accelYW = Math.sin(Math.toRadians(gyro.getAngle())) * accel.getY() * 32.175197;
 		
-		xPos += Math.cos(Math.toRadians(gyro.getAngle())) * accelVelocity * dt;
-		xPos += Math.sin(Math.toRadians(gyro.getAngle())) * accelVelocity * dt;
+		velX = accelXW * dt;
+		velY = accelYW * dt;
+		
+		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+		
+		xPos += Math.cos(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
+		yPos += Math.sin(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
 		
 		//robot_position_x += cos(robot_heading) * robot_velocity * dt;
 		//robot_position_y += sin(robot_heading) * robot_velocity * dt;
@@ -73,7 +85,13 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("meters:", (rightEncoder.getDistance() + leftEncoder.getDistance()) / 2);
 		SmartDashboard.putNumber("right:", rightEncoder.getDistance());
 		SmartDashboard.putNumber("left:", leftEncoder.getDistance());
-		SmartDashboard.putNumber("accelVelocity:", accelVelocity);
+		//SmartDashboard.putNumber("accelVelocity:", accelXVelocity);
+		
+		SmartDashboard.putNumber("accel X", accel.getX());
+		SmartDashboard.putNumber("dt", dt);
+		
+		SmartDashboard.putNumber("leftEncoder", leftEncoder.get());
+		SmartDashboard.putNumber("rightEncoder", rightEncoder.get());
 		
 		
 		oldTime = timer.get();
@@ -106,7 +124,7 @@ public class PositionTracker implements HuskyClass {
 		xPos = 0;
 		yPos = 0;
 		
-		accelVelocity = 0;
+		//accelVelocity = 0;
 		gyro.reset();
 		
 		rightEncoder.reset();
@@ -117,10 +135,12 @@ public class PositionTracker implements HuskyClass {
 	public void doAuto() {
 		dt = timer.get() - oldTime;
 		
-		accelVelocity += accel.getX() * dt * 32.175197; // gs to feet per second^2
+		//accelVelocity += accel.getX() * dt * 32.175197; // gs to feet per second^2
 		
-		xPos += Math.cos(Math.toRadians(gyro.getAngle())) * accelVelocity * dt;
-		xPos += Math.sin(Math.toRadians(gyro.getAngle())) * accelVelocity * dt;
+		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+		
+		xPos += Math.cos(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
+		yPos += Math.sin(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
 		
 		//robot_position_x += cos(robot_heading) * robot_velocity * dt;
 		//robot_position_y += sin(robot_heading) * robot_velocity * dt;
@@ -131,7 +151,13 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("meters:", (rightEncoder.getDistance() + leftEncoder.getDistance()) / 2);
 		SmartDashboard.putNumber("right:", rightEncoder.getDistance());
 		SmartDashboard.putNumber("left:", leftEncoder.getDistance());
-		SmartDashboard.putNumber("accelVelocity:", accelVelocity);
+		//SmartDashboard.putNumber("accelVelocity:", accelVelocity);
+		
+		SmartDashboard.putNumber("accel X", accel.getX());
+		SmartDashboard.putNumber("dt", dt);
+		
+		SmartDashboard.putNumber("leftEncoder", leftEncoder.get());
+		SmartDashboard.putNumber("rightEncoder", rightEncoder.get());
 		
 		
 		oldTime = timer.get();

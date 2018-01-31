@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import org.usfirst.frc.team4585.model.*;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class GhostController implements HuskyClass {
 	
 	private ArrayList<AutoTask> taskList = new ArrayList<AutoTask>();
@@ -29,7 +31,7 @@ public class GhostController implements HuskyClass {
 		claw = Cl;
 		tracker = T;
 		
-		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
+		taskList.add(new AutoTask(TaskType.goTo, new double[] {-5, 5}));
 		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
 		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
 	}
@@ -54,6 +56,11 @@ public class GhostController implements HuskyClass {
 
 	@Override
 	public void doAuto() {
+		
+		driveTo(new double[] {5, 5});
+		
+		
+		/*
 		switch(taskList.get(counter).getType()){
 		
 		case goTo:
@@ -66,6 +73,7 @@ public class GhostController implements HuskyClass {
 			break;
 			
 		}
+		*/
 	}
 
 
@@ -81,18 +89,37 @@ public class GhostController implements HuskyClass {
 		
 	}
 	
-	public boolean driveTo(double[] I) {
+	private boolean driveTo(double[] I) {
 		double[] buffer = {0, 0};
 		double targAngle;
 		posInfo = tracker.getInfo();
 		
 		targAngle = Math.toDegrees(Math.atan2(I[0] - posInfo[0], I[1] - posInfo[1]));
 		
-		buffer[0] = 0.5;
-		buffer[1] = (targAngle - posInfo[2]) / 10;
+		buffer[0] = 0;
+		buffer[1] = angleAccel(posInfo[2], targAngle);
 		
 		chassis.giveInfo(buffer);
-		return buffer[0] == I[0] && buffer[1] == I[1];
+		
+		SmartDashboard.putNumber("num", posInfo[2]);
+		
+		
+		return false;
+	}
+	
+	private double angleAccel(double inAngle, double targAngle) {
+		double output;
+		
+		output = (targAngle - inAngle) / 60;
+		
+		if (Math.abs(output) < 0.5 && !(Math.abs(output) < 0.1)) {
+			output = 0.5;
+		}
+		else if (Math.abs(output) < 0.1) {
+			output = 0;
+		}
+		
+		return output;
 	}
 
 }

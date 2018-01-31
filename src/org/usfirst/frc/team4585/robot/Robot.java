@@ -79,6 +79,8 @@ public class Robot extends IterativeRobot {
 		claw.teleopInit();
 		tracker.teleopInit();
 		
+		timer.reset();
+		timer.start();
 	}
 
 	/**

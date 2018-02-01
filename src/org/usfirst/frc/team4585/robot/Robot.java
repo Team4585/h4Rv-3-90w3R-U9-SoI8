@@ -29,7 +29,7 @@ public class Robot extends IterativeRobot {
 	private Arm arm = new Arm(joy);
 	private Claw claw = new Claw(joy);
 	private PositionTracker tracker = new PositionTracker(timer);
-	private GhostController marcus = new GhostController(chassis, arm, claw, tracker);
+	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, joy);
 	
 
 	/**
@@ -74,6 +74,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopInit() {
+		marcus.teleopInit();
 		chassis.teleopInit();
 		arm.teleopInit();
 		claw.teleopInit();
@@ -88,6 +89,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		marcus.doTeleop();
 		chassis.doTeleop();
 		arm.doTeleop();
 		claw.doTeleop();

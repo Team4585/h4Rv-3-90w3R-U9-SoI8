@@ -4,13 +4,12 @@ import java.util.ArrayList;
 
 import org.usfirst.frc.team4585.model.*;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GhostController implements HuskyClass {
 	
 	private ArrayList<AutoTask> taskList = new ArrayList<AutoTask>();
-	
-	
 	
 	private int counter;
 	
@@ -18,34 +17,49 @@ public class GhostController implements HuskyClass {
 	private double[] armInfo;
 	private double[] clawInfo;
 	private double[] posInfo;
+	private double[] teleTargPos;	//experemental
+	private double teleTargAngle;
 	
 	private Chassis chassis;
 	private Arm arm;
 	private Claw claw;
 	private PositionTracker tracker;
+	private Joystick joy;
 	
 	
-	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T) {
+	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, Joystick J) {
 		chassis = Ch;
 		arm = A;
 		claw = Cl;
 		tracker = T;
+		joy = J;
 		
-		taskList.add(new AutoTask(TaskType.goTo, new double[] {-5, 5}));
+		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
 		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
 		taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 5}));
 	}
 	
 	@Override
 	public void teleopInit() {
-		// TODO Auto-generated method stub
+		teleTargPos = new double[] {0, 0};
+		teleTargAngle = 0;
 
 	}
 
 	@Override
 	public void doTeleop() {
-		// TODO Auto-generated method stub
-
+		
+		posInfo = tracker.getInfo();
+		teleTargAngle += joy.getRawAxis(2) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5);
+		
+		chassis.giveInfo(new double[] {-joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5),
+				angleAccel(posInfo[2], teleTargAngle)});
+		
+		/*  fake mecanum
+		targPos[0] += -joy.getRawAxis(0) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5);
+		targPos[1] += joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5);
+		driveTo(targPos);
+		*/
 	}
 
 	@Override
@@ -57,7 +71,7 @@ public class GhostController implements HuskyClass {
 	@Override
 	public void doAuto() {
 		
-		driveTo(new double[] {5, 5});
+		driveTo(new double[] {5, 0});
 		
 		
 		/*
@@ -101,7 +115,7 @@ public class GhostController implements HuskyClass {
 		
 		chassis.giveInfo(buffer);
 		
-		SmartDashboard.putNumber("num", posInfo[2]);
+		SmartDashboard.putNumber("heading", posInfo[2]);
 		
 		
 		return false;
@@ -110,16 +124,20 @@ public class GhostController implements HuskyClass {
 	private double angleAccel(double inAngle, double targAngle) {
 		double output;
 		
-		output = (targAngle - inAngle) / 60;
+		output = (targAngle - inAngle) / 45;
 		
-		if (Math.abs(output) < 0.5 && !(Math.abs(output) < 0.1)) {
+		if (output < 0.5 && !(output < 0.1)) {
 			output = 0.5;
 		}
-		else if (Math.abs(output) < 0.1) {
+		else if (output > -0.5 && !(output > -0.1)) {
+			output = -0.5;
+		}
+		else if (Math.abs(output) < 0.05) {
 			output = 0;
 		}
+
 		
 		return output;
 	}
-
+	
 }

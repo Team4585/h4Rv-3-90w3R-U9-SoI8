@@ -37,7 +37,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	@Override
 	public void doTeleop() {
-		arcadeDrive(-joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5), joy.getRawAxis(2) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
+		arcadeDrive(info[0], info[1]);
 		
 		
 		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));

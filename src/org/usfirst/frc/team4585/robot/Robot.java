@@ -31,6 +31,8 @@ public class Robot extends IterativeRobot {
 	private Claw claw = new Claw(joy);
 	private PositionTracker tracker = new PositionTracker(timer);
 	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, joy);
+	private ArmExtender actuator = new ArmExtender(joy);
+	private Winch winch = new Winch(joy); 
 	
 
 	/**
@@ -42,6 +44,7 @@ public class Robot extends IterativeRobot {
 		
 	}
 
+
 	/**
 	 * This function is run once each time the robot enters autonomous mode.
 	 */
@@ -52,6 +55,7 @@ public class Robot extends IterativeRobot {
 		arm.autoInit();
 		claw.autoInit();
 		tracker.autoInit();
+		actuator.autoInit();
 		
 		timer.reset();
 		timer.start();
@@ -80,6 +84,7 @@ public class Robot extends IterativeRobot {
 		arm.teleopInit();
 		claw.teleopInit();
 		tracker.teleopInit();
+		actuator.teleopInit();
 		
 		timer.reset();
 		timer.start();
@@ -95,6 +100,7 @@ public class Robot extends IterativeRobot {
 		arm.doTeleop();
 		claw.doTeleop();
 		tracker.doTeleop();
+		actuator.doTeleop();
 	}
 
 	/**

@@ -24,10 +24,10 @@ public class GhostController implements HuskyClass {
 	private Arm arm;
 	private Claw claw;
 	private PositionTracker tracker;
-	private Joystick joy;
+	private HuskyJoy joy;
 	
 	
-	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, Joystick J) {
+	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, HuskyJoy J) {
 		chassis = Ch;
 		arm = A;
 		claw = Cl;
@@ -50,14 +50,22 @@ public class GhostController implements HuskyClass {
 	public void doTeleop() {
 		
 		posInfo = tracker.getInfo();
-		teleTargAngle += joy.getRawAxis(2) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5);
 		
-		chassis.giveInfo(new double[] {-joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5),
+			//normal drive
+		chassis.giveInfo(new double[] {-joy.getSliderScaled(1), joy.getSliderScaled(2)});
+		
+		/*	//angle accel turn
+		teleTargAngle += joy.getSliderScaled(2) * 5;
+		
+		SmartDashboard.putNumber("joy", joy.getSliderScaled(2));
+		
+		chassis.giveInfo(new double[] {-joy.getSliderScaled(1),
 				angleAccel(posInfo[2], teleTargAngle)});
+		*/
 		
-		/*  fake mecanum
-		targPos[0] += -joy.getRawAxis(0) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5);
-		targPos[1] += joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5);
+		/*  //fake mecanum
+		targPos[0] += -joy.getSliderScaled(0);
+		targPos[1] += joy.getSliderScaled(1);
 		driveTo(targPos);
 		*/
 	}
@@ -71,7 +79,7 @@ public class GhostController implements HuskyClass {
 	@Override
 	public void doAuto() {
 		
-		driveTo(new double[] {5, 0});
+		driveTo(new double[] {5, 5});
 		
 		
 		/*
@@ -109,8 +117,13 @@ public class GhostController implements HuskyClass {
 		posInfo = tracker.getInfo();
 		
 		targAngle = Math.toDegrees(Math.atan2(I[0] - posInfo[0], I[1] - posInfo[1]));
+		//targAngle = 90;
 		
-		buffer[0] = 0;
+		SmartDashboard.putNumber("targX", I[0] - posInfo[0]);
+		SmartDashboard.putNumber("targY", I[1] - posInfo[1]);
+		SmartDashboard.putNumber("TargAngle", targAngle);
+		
+		buffer[0] = 0.5;
 		buffer[1] = angleAccel(posInfo[2], targAngle);
 		
 		chassis.giveInfo(buffer);
@@ -118,26 +131,27 @@ public class GhostController implements HuskyClass {
 		SmartDashboard.putNumber("heading", posInfo[2]);
 		
 		
-		return false;
+		return (Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1]));
 	}
 	
 	private double angleAccel(double inAngle, double targAngle) {
 		double output;
 		
-		output = (targAngle - inAngle) / 45;
+		output = (targAngle - inAngle) / 90;
 		
 		if (output < 0.5 && !(output < 0.1)) {
 			output = 0.5;
 		}
-		else if (output > -0.5 && !(output > -0.1)) {
+		else if (output > -0.5 && !(output > -0.001)) {
 			output = -0.5;
 		}
-		else if (Math.abs(output) < 0.05) {
+		else if (Math.abs(output) < 0.001) {
 			output = 0;
 		}
 
 		
 		return output;
 	}
+	
 	
 }

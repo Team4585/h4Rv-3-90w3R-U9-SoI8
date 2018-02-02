@@ -7,6 +7,7 @@ import org.usfirst.frc.team4585.model.auto.GhostController;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 
@@ -24,7 +25,7 @@ public class Robot extends IterativeRobot {
 	
 	
 	private Timer timer = new Timer();
-	private Joystick joy = new Joystick(JOYSTICK_PORT);
+	private HuskyJoy joy = new HuskyJoy(JOYSTICK_PORT);
 	private Chassis chassis = new Chassis(joy, timer);
 	private Arm arm = new Arm(joy);
 	private Claw claw = new Claw(joy);

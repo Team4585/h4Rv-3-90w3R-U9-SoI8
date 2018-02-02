@@ -9,10 +9,10 @@ public class Arm implements HuskyClass {
 	
 	private Spark arm = new Spark(CLAW_PORT);
 	
-	private Joystick joy;
+	private HuskyJoy joy;
 	
 	
-	public Arm(Joystick J) {
+	public Arm(HuskyJoy J) {
 		joy = J;
 	}
 	

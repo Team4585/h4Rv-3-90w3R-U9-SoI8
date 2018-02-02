@@ -9,10 +9,10 @@ public class Claw implements HuskyClass {
 	
 	private Spark claw = new Spark(CLAW_PORT);
 	
-	private Joystick joy;
+	private HuskyJoy joy;
 	
 	
-	public Claw(Joystick J) {
+	public Claw(HuskyJoy J) {
 		joy = J;
 	}
 	

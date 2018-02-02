@@ -28,10 +28,7 @@ public class PositionTracker implements HuskyClass {
 	private double encoderYPos;
 	private double accelXPos;
 	private double accelYPos;
-	private double accelXW;
-	private double accelYW;
-	private double velX;
-	private double velY;
+	
 	private double encoderVelocity;
 	
 	private int[][] fieldMap = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
@@ -66,15 +63,45 @@ public class PositionTracker implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
-		dt = timer.get() - oldTime;
-		//accelXVelocity += accel.getY() * dt * 32.175197; // gs to feet per second^2
-		//accelYVelocity += accel.getX() * dt * 32.175197; // backwards on purpose
+		double accelXW;
+		double accelYW;
+		double accelXLoc;
+		double accelYLoc;
+		double sinTheta;
+		double cosTheta;
+		double velX;
+		double velY;
 		
-		accelXW = Math.cos(Math.toRadians(gyro.getAngle())) * accel.getX() * 32.175197;
-		accelYW = Math.sin(Math.toRadians(gyro.getAngle())) * accel.getY() * 32.175197;
+		dt = timer.get() - oldTime;
+		
+		//accelXLoc = accel.getX() /* * 32.175197*/;
+		//accelYLoc = accel.getY() /* * 32.175197*/;
+		
+		accelXLoc = 0.1;
+		accelYLoc = 0;
+		
+		SmartDashboard.putNumber("accel X", accelXLoc);
+		SmartDashboard.putNumber("accel Y", accelYLoc);
+		
+		sinTheta = Math.sin(Math.toRadians(gyro.getAngle()));
+		cosTheta = Math.cos(Math.toRadians(gyro.getAngle()));
+		
+		SmartDashboard.putNumber("sin", sinTheta);
+		SmartDashboard.putNumber("cos", cosTheta);
+		
+		SmartDashboard.putNumber("Heading", gyro.getAngle());
+		
+		accelXW = (cosTheta * accelXLoc) - (sinTheta * accelYLoc);
+		accelYW = (sinTheta * accelXLoc) + (cosTheta * accelYLoc);
+		
+		SmartDashboard.putNumber("accelXW", accelXW);
+		SmartDashboard.putNumber("accelYW", accelYW);
 		
 		velX = accelXW * dt;
 		velY = accelYW * dt;
+		
+		SmartDashboard.putNumber("velX", velX);
+		SmartDashboard.putNumber("velY", velY);
 		
 		accelXPos += velX * dt;
 		accelYPos += velY * dt;
@@ -85,7 +112,6 @@ public class PositionTracker implements HuskyClass {
 		encoderYPos += Math.sin(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
 		
 
-		
 		SmartDashboard.putNumber("encoder X pos", encoderXPos);
 		SmartDashboard.putNumber("encoder Y pos", encoderYPos);
 		
@@ -97,7 +123,6 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("left:", leftEncoder.getDistance());
 		//SmartDashboard.putNumber("accelVelocity:", accelXVelocity);
 		
-		SmartDashboard.putNumber("accel X", accel.getX());
 		SmartDashboard.putNumber("dt", dt);
 		
 		SmartDashboard.putNumber("leftEncoder", leftEncoder.get());
@@ -146,12 +171,26 @@ public class PositionTracker implements HuskyClass {
 
 	@Override
 	public void doAuto() {
-		dt = timer.get() - oldTime;
-		//accelXVelocity += accel.getY() * dt * 32.175197; // gs to feet per second^2
-		//accelYVelocity += accel.getX() * dt * 32.175197; // backwards on purpose
+		double accelXW;
+		double accelYW;
+		double accelXLoc;
+		double accelYLoc;
+		double sinTheta;
+		double cosTheta;
+		double velX;
+		double velY;
 		
-		accelXW = Math.cos(Math.toRadians(gyro.getAngle())) * accel.getX() * 32.175197;
-		accelYW = Math.sin(Math.toRadians(gyro.getAngle())) * accel.getY() * 32.175197;
+		
+		dt = timer.get() - oldTime;
+		
+		accelXLoc = accel.getX() * 32.175197;
+		accelYLoc = accel.getY() * 32.175197;
+		
+		sinTheta = Math.sin(Math.toRadians(gyro.getAngle()));
+		cosTheta = Math.cos(Math.toRadians(gyro.getAngle()));
+		
+		accelXW = (cosTheta * accelXLoc) - (sinTheta * accelYLoc);
+		accelYW = (sinTheta * accelXLoc) + (cosTheta * accelYLoc);
 		
 		velX = accelXW * dt;
 		velY = accelYW * dt;
@@ -177,7 +216,6 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("left:", leftEncoder.getDistance());
 		//SmartDashboard.putNumber("accelVelocity:", accelXVelocity);
 		
-		SmartDashboard.putNumber("accel X", accel.getX());
 		SmartDashboard.putNumber("dt", dt);
 		
 		SmartDashboard.putNumber("leftEncoder", leftEncoder.get());

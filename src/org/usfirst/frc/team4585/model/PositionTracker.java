@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PositionTracker implements HuskyClass {
@@ -28,8 +29,10 @@ public class PositionTracker implements HuskyClass {
 	private double encoderYPos;
 	private double accelXPos;
 	private double accelYPos;
-	
+	private double modAngle;
 	private double encoderVelocity;
+	
+	private SendableChooser<Integer> stationChooser = new SendableChooser<>();
 	
 	private int[][] fieldMap = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,},
 								   {0},
@@ -44,6 +47,13 @@ public class PositionTracker implements HuskyClass {
 		
 		leftEncoder.setDistancePerPulse(LEFT_DISTANCE_PER_PULSE);
 		rightEncoder.setDistancePerPulse(RIGHT_DISTANCE_PER_PULSE);
+	}
+	
+	public void dashInit() {
+		stationChooser.addDefault("Left", 0);
+		stationChooser.addObject("Middle", 1);
+		stationChooser.addObject("Right", 2);
+		SmartDashboard.putData("Robot Driver Station", stationChooser);
 	}
 	
 	@Override
@@ -79,17 +89,19 @@ public class PositionTracker implements HuskyClass {
 		
 		accelXLoc = 0.1;
 		accelYLoc = 0;
+		modAngle = ((gyro.getAngle() + 180) % 360) -180;
 		
 		SmartDashboard.putNumber("accel X", accelXLoc);
 		SmartDashboard.putNumber("accel Y", accelYLoc);
 		
-		sinTheta = Math.sin(Math.toRadians(gyro.getAngle()));
-		cosTheta = Math.cos(Math.toRadians(gyro.getAngle()));
+		sinTheta = Math.sin(Math.toRadians(modAngle));
+		cosTheta = Math.cos(Math.toRadians(modAngle));
 		
 		SmartDashboard.putNumber("sin", sinTheta);
 		SmartDashboard.putNumber("cos", cosTheta);
 		
 		SmartDashboard.putNumber("Heading", gyro.getAngle());
+		SmartDashboard.putNumber("modAngle", modAngle);
 		
 		accelXW = (cosTheta * accelXLoc) - (sinTheta * accelYLoc);
 		accelYW = (sinTheta * accelXLoc) + (cosTheta * accelYLoc);
@@ -108,8 +120,8 @@ public class PositionTracker implements HuskyClass {
 		
 		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
 		
-		encoderXPos += Math.cos(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
-		encoderYPos += Math.sin(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
+		encoderXPos += Math.sin(Math.toRadians(modAngle)) * encoderVelocity * dt;
+		encoderYPos += Math.cos(Math.toRadians(modAngle)) * encoderVelocity * dt;
 		
 
 		SmartDashboard.putNumber("encoder X pos", encoderXPos);
@@ -156,8 +168,28 @@ public class PositionTracker implements HuskyClass {
 
 	@Override
 	public void autoInit() {
-		encoderXPos = 0;
-		encoderYPos = 0;
+		
+		encoderYPos = 1;
+		
+		switch (stationChooser.getSelected()){
+		
+		case 0:
+			encoderXPos = 7;
+			break;
+			
+		case 1:
+			encoderXPos = 13;
+			break;
+			
+		case 2:
+			encoderXPos = 23;
+			break;
+			
+		default:
+			encoderXPos = 7;
+			break;
+		
+		}
 		
 		accelXPos = 0;
 		accelYPos = 0;
@@ -180,31 +212,48 @@ public class PositionTracker implements HuskyClass {
 		double velX;
 		double velY;
 		
-		
 		dt = timer.get() - oldTime;
 		
-		accelXLoc = accel.getX() * 32.175197;
-		accelYLoc = accel.getY() * 32.175197;
+		//accelXLoc = accel.getX() /* * 32.175197*/;
+		//accelYLoc = accel.getY() /* * 32.175197*/;
 		
-		sinTheta = Math.sin(Math.toRadians(gyro.getAngle()));
-		cosTheta = Math.cos(Math.toRadians(gyro.getAngle()));
+		accelXLoc = 0.1;
+		accelYLoc = 0;
+		modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		
+		SmartDashboard.putNumber("accel X", accelXLoc);
+		SmartDashboard.putNumber("accel Y", accelYLoc);
+		
+		sinTheta = Math.sin(Math.toRadians(modAngle));
+		cosTheta = Math.cos(Math.toRadians(modAngle));
+		
+		SmartDashboard.putNumber("sin", sinTheta);
+		SmartDashboard.putNumber("cos", cosTheta);
+		
+		SmartDashboard.putNumber("Heading", gyro.getAngle());
+		SmartDashboard.putNumber("modAngle", modAngle);
 		
 		accelXW = (cosTheta * accelXLoc) - (sinTheta * accelYLoc);
 		accelYW = (sinTheta * accelXLoc) + (cosTheta * accelYLoc);
 		
+		SmartDashboard.putNumber("accelXW", accelXW);
+		SmartDashboard.putNumber("accelYW", accelYW);
+		
 		velX = accelXW * dt;
 		velY = accelYW * dt;
+		
+		SmartDashboard.putNumber("velX", velX);
+		SmartDashboard.putNumber("velY", velY);
 		
 		accelXPos += velX * dt;
 		accelYPos += velY * dt;
 		
 		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
 		
-		encoderXPos += Math.cos(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
-		encoderYPos += Math.sin(Math.toRadians(gyro.getAngle())) * encoderVelocity * dt;
+		encoderXPos += Math.sin(Math.toRadians(modAngle)) * encoderVelocity * dt;
+		encoderYPos += Math.cos(Math.toRadians(modAngle)) * encoderVelocity * dt;
 		
 
-		
 		SmartDashboard.putNumber("encoder X pos", encoderXPos);
 		SmartDashboard.putNumber("encoder Y pos", encoderYPos);
 		
@@ -227,7 +276,7 @@ public class PositionTracker implements HuskyClass {
 
 	@Override
 	public double[] getInfo() {
-		return new double[] {encoderXPos, encoderYPos, gyro.getAngle()};
+		return new double[] {encoderXPos, encoderYPos, modAngle};
 	}
 
 	@Override

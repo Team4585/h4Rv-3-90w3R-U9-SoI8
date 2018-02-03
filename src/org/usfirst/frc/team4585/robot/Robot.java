@@ -2,11 +2,13 @@
 package org.usfirst.frc.team4585.robot;
 
 import org.usfirst.frc.team4585.model.*;
-import org.usfirst.frc.team4585.model.auto.GhostController;
+import org.usfirst.frc.team4585.model.auto.*;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -34,6 +36,9 @@ public class Robot extends IterativeRobot {
 	private ArmExtender actuator = new ArmExtender(joy);
 	private Winch winch = new Winch(joy); 
 	
+	
+	
+	
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -41,6 +46,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		
+		tracker.dashInit();
+		marcus.dashInit();
+		
+		
+		//DriverStation.getInstance().getGameSpecificMessage();
 		
 	}
 

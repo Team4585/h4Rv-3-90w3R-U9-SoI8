@@ -40,7 +40,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 		arcadeDrive(info[0], info[1]);
 		
 		
-		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));
+		SmartDashboard.putNumber("joystick axis two:", joy.getRawAxis(2));
 		SmartDashboard.putNumber("in: ", sonar.getInches());
 	}
 	

@@ -29,6 +29,7 @@ public class GhostController implements HuskyClass {
 	private HuskyJoy joy;
 	
 	private SendableChooser<String> firstAutoChooser = new SendableChooser<>();
+	private HuskyPID anglePID = new HuskyPID(.1, 0, 1, 0);
 	
 	
 	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, HuskyJoy J) {
@@ -226,6 +227,7 @@ public class GhostController implements HuskyClass {
 		posInfo = tracker.getInfo();
 		
 		buffer[1] = angleAccel(posInfo[2], targAngle);
+		//buffer[1] = 
 		
 		chassis.giveInfo(buffer);
 		

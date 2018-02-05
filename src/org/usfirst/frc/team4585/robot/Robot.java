@@ -28,13 +28,14 @@ public class Robot extends IterativeRobot {
 	
 	private Timer timer = new Timer();
 	private HuskyJoy joy = new HuskyJoy(JOYSTICK_PORT);
+	private HuskyJoy weaponsJoy = joy;
 	private Chassis chassis = new Chassis(joy, timer);
-	private Arm arm = new Arm(joy);
-	private Claw claw = new Claw(joy);
+	private Arm arm = new Arm(weaponsJoy);
+	private Claw claw = new Claw(weaponsJoy);
 	private PositionTracker tracker = new PositionTracker(timer);
 	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, joy);
-	private ArmExtender actuator = new ArmExtender(joy);
-	private Winch winch = new Winch(joy); 
+	private ArmExtender actuator = new ArmExtender(weaponsJoy);
+	private Winch winch = new Winch(weaponsJoy);
 	
 	
 	

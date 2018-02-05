@@ -5,9 +5,9 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm implements HuskyClass {
-	private final int CLAW_PORT = 6;
+	private final int ARM_PORT = 7;
 	
-	private Spark arm = new Spark(CLAW_PORT);
+	private Spark arm = new Spark(ARM_PORT);
 	
 	private HuskyJoy joy;
 	
@@ -30,11 +30,13 @@ public class Arm implements HuskyClass {
 		if (joy.getPOV(0) == 0.0) {
 			//claw.set(((-joy.getRawAxis(3) + 1) / 4) + 0.5);
 			
-			arm.set(((-joy.getRawAxis(3) + 1) / 4) + 0.5);
+			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.5) - 0.4);
+			//arm.set(.5);
 		}
 		if (joy.getPOV(0) == 180.0) {
 			
-			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
+			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0.5) - 0.4);
+			//arm.set(-.5);
 		}
 		if (joy.getPOV(0) == -1.0) {
 			arm.set(0);

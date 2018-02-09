@@ -37,6 +37,8 @@ public class Robot extends IterativeRobot {
 	private ArmExtender actuator = new ArmExtender(weaponsJoy);
 	private Winch winch = new Winch(weaponsJoy);
 	
+	private ArduinoCom arduino = new ArduinoCom(claw);
+	
 	
 	
 	
@@ -51,11 +53,12 @@ public class Robot extends IterativeRobot {
 		tracker.dashInit();
 		marcus.dashInit();
 		
+		arduino.setPins();
+		
 		
 		//DriverStation.getInstance().getGameSpecificMessage();
 		
 	}
-
 
 	/**
 	 * This function is run once each time the robot enters autonomous mode.
@@ -83,6 +86,8 @@ public class Robot extends IterativeRobot {
 		arm.doAuto();
 		claw.doAuto();
 		tracker.doAuto();
+		
+		arduino.setPins();
 		
 	}
 
@@ -113,6 +118,8 @@ public class Robot extends IterativeRobot {
 		claw.doTeleop();
 		tracker.doTeleop();
 		actuator.doTeleop();
+		
+		arduino.setPins();
 	}
 
 	/**
@@ -120,5 +127,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		arduino.setPins();
+	}
+	
+	@Override
+	public void disabledPeriodic() {
+		arduino.setPins();
 	}
 }

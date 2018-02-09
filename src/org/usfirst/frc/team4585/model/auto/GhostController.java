@@ -29,7 +29,7 @@ public class GhostController implements HuskyClass {
 	private HuskyJoy joy;
 	
 	private SendableChooser<String> firstAutoChooser = new SendableChooser<>();
-	private HuskyPID anglePID = new HuskyPID(.1, 0, 1, 0);
+	private HuskyPID anglePID = new HuskyPID(1/90, 0, 0, 0);
 	
 	
 	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, HuskyJoy J) {
@@ -153,10 +153,31 @@ public class GhostController implements HuskyClass {
 	@Override
 	public void doAuto() {
 		
-		//driveTo(new double[] {0, 0});
+		//25' 3.5"
+		//left -3452.0
+		//right -3464.0
+		
+		//102' 10"
+		//right -14032.0
+		//left -13976.0
+		
+		
+		posInfo = tracker.getInfo();
+		if ((posInfo[1]-1) < 90) { // 25 3.5 
+			chassis.giveInfo(new double[] {0.7, angleAccel(posInfo[2], 0)});
+			
+		} else if ((posInfo[1]-1) < 100) {
+			chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], 0)});
+		} else {
+			chassis.giveInfo(new double[] {0, 0});
+		}
+		
+		
+		
+		//driveTo(new double[] {7, 2});
 		//SmartDashboard.putBoolean("at targ?", pointAt(90));
 		
-		
+		/*
 		if(counter < taskList.size()) {
 			switch(taskList.get(counter).getType()){
 			
@@ -181,7 +202,7 @@ public class GhostController implements HuskyClass {
 				
 			}
 		}
-		
+		*/
 		
 	}
 
@@ -226,8 +247,8 @@ public class GhostController implements HuskyClass {
 		double[] buffer = {0, 0};
 		posInfo = tracker.getInfo();
 		
-		buffer[1] = angleAccel(posInfo[2], targAngle);
-		//buffer[1] = 
+		//buffer[1] = angleAccel(posInfo[2], targAngle);
+		buffer[1] = anglePID.calculate(posInfo[2], targAngle);
 		
 		chassis.giveInfo(buffer);
 		

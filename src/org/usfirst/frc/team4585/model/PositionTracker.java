@@ -13,8 +13,16 @@ public class PositionTracker implements HuskyClass {
 	private final int LEFT_ENCODER_PORT_B = 1;
 	private final int RIGHT_ENCODER_PORT_A = 2;
 	private final int RIGHT_ENCODER_PORT_B = 3;
+	/*
 	private final double LEFT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
 	private final double RIGHT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
+	*/
+	private final double LEFT_DISTANCE_PER_PULSE = (617.0d / 6.0d) / 13976.0d;
+	private final double RIGHT_DISTANCE_PER_PULSE = (617.0d / 6.0d) / 14032.0d;
+	
+	private final double ACCEL_FACTOR = 32.175197; //32.175197
+	private final double ACCEL_DEAD = 0.1;
+	private final double VEL_DEAD = 0.1 * ACCEL_FACTOR;
 	
 	private Encoder leftEncoder = new Encoder(LEFT_ENCODER_PORT_A, LEFT_ENCODER_PORT_B);
 	private Encoder rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A, RIGHT_ENCODER_PORT_B);
@@ -31,6 +39,11 @@ public class PositionTracker implements HuskyClass {
 	private double accelYPos;
 	private double modAngle;
 	private double encoderVelocity;
+	
+	private double accelXLoc = 0;
+	private double accelYLoc = 0;
+	private double velX2 = 0;
+	private double velY2 = 0;
 	
 	private SendableChooser<Integer> stationChooser = new SendableChooser<>();
 	
@@ -64,6 +77,9 @@ public class PositionTracker implements HuskyClass {
 		accelXPos = 0;
 		accelYPos = 0;
 		
+		velX2 = 0;
+		velY2 = 0;
+		
 		//accelVelocity = 0;
 		gyro.reset();
 		
@@ -75,21 +91,29 @@ public class PositionTracker implements HuskyClass {
 	public void doTeleop() {
 		double accelXW;
 		double accelYW;
-		double accelXLoc;
-		double accelYLoc;
 		double sinTheta;
 		double cosTheta;
-		double velX;
-		double velY;
+		
 		
 		dt = timer.get() - oldTime;
 		
-		//accelXLoc = accel.getX() /* * 32.175197*/;
-		//accelYLoc = accel.getY() /* * 32.175197*/;
+		accelXLoc = accel.getX() /* * 32.175197*/;
+		if(Math.abs(accelXLoc) < ACCEL_DEAD) {
+			accelXLoc = 0.0;
+		}
+		accelXLoc *= ACCEL_FACTOR;
 		
-		accelXLoc = 0.1;
-		accelYLoc = 0;
+		//accelXLoc = 0.1;
+		
+		accelYLoc = accel.getY() /* * 32.175197*/;
+		if(Math.abs(accelYLoc) < ACCEL_DEAD) {
+			accelYLoc = 0.0;
+		}
+		accelYLoc *= ACCEL_FACTOR;
+		//accelYLoc = 0;
+		
 		modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		//modAngle = 30;
 		
 		SmartDashboard.putNumber("accel X", accelXLoc);
 		SmartDashboard.putNumber("accel Y", accelYLoc);
@@ -109,16 +133,28 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("accelXW", accelXW);
 		SmartDashboard.putNumber("accelYW", accelYW);
 		
-		velX = accelXW * dt;
-		velY = accelYW * dt;
+		velX2 += accelXW * dt;
+		SmartDashboard.putNumber("velX2", velX2);
+		if (accelXW == 0.0 && Math.abs(velX2) < VEL_DEAD) {
+			velX2 = 0;
+		}
 		
-		SmartDashboard.putNumber("velX", velX);
-		SmartDashboard.putNumber("velY", velY);
+		velY2 += accelYW * dt;
+		SmartDashboard.putNumber("velY2", velY2);
+		if (accelYW == 0.0 && Math.abs(velY2) < VEL_DEAD) {
+			velY2 = 0;
+		}
 		
-		accelXPos += velX * dt;
-		accelYPos += velY * dt;
+		
+		SmartDashboard.putNumber("velY2", velY2);
+		
+		accelXPos += velX2 * dt;
+		accelYPos += velY2 * dt;
 		
 		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+		
+		SmartDashboard.putNumber("R encoder dist", rightEncoder.getDistance());
+		SmartDashboard.putNumber("L encoder dist", leftEncoder.getDistance());
 		
 		encoderXPos += Math.sin(Math.toRadians(modAngle)) * encoderVelocity * dt;
 		encoderYPos += Math.cos(Math.toRadians(modAngle)) * encoderVelocity * dt;
@@ -247,6 +283,9 @@ public class PositionTracker implements HuskyClass {
 		
 		accelXPos += velX * dt;
 		accelYPos += velY * dt;
+		
+		SmartDashboard.putNumber("Left pulse", leftEncoder.get());
+		SmartDashboard.putNumber("Right pulse", rightEncoder.get());
 		
 		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
 		

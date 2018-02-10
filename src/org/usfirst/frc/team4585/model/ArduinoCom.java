@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArduinoCom {
 
-	private DigitalOutput colorPin = new DigitalOutput(10);
+	private DigitalOutput colorPin = new DigitalOutput(8);
 	private DigitalOutput clawPin = new DigitalOutput(11);
 	
 	private Claw claw;

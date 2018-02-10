@@ -1,14 +1,14 @@
 
 package org.usfirst.frc.team4585.robot;
 
+import java.io.IOException;
+
 import org.usfirst.frc.team4585.model.*;
 import org.usfirst.frc.team4585.model.auto.*;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -38,7 +38,9 @@ public class Robot extends IterativeRobot {
 	private Winch winch = new Winch(weaponsJoy);
 	
 	private ArduinoCom arduino = new ArduinoCom(claw);
+	private VisionCom visCom = new VisionCom();
 	
+	private double oldTime;
 	
 	
 	
@@ -49,6 +51,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
+		visCom.beginCamera();
 		
 		tracker.dashInit();
 		marcus.dashInit();
@@ -105,6 +108,8 @@ public class Robot extends IterativeRobot {
 		
 		timer.reset();
 		timer.start();
+		
+		oldTime = timer.get();
 	}
 
 	/**
@@ -120,6 +125,12 @@ public class Robot extends IterativeRobot {
 		actuator.doTeleop();
 		
 		arduino.setPins();
+		/*
+		if (timer.get() - oldTime > 1) {
+			visCom.doStuff();
+			oldTime = timer.get();
+		}*/
+		
 	}
 
 	/**
@@ -128,6 +139,11 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void testPeriodic() {
 		arduino.setPins();
+		
+		if (timer.get() - oldTime > 1) {
+			visCom.doStuff();
+			oldTime = timer.get();
+		}
 	}
 	
 	@Override

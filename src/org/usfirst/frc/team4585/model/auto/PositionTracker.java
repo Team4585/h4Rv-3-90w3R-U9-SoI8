@@ -1,4 +1,6 @@
-package org.usfirst.frc.team4585.model;
+package org.usfirst.frc.team4585.model.auto;
+
+import org.usfirst.frc.team4585.model.HuskyClass;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;

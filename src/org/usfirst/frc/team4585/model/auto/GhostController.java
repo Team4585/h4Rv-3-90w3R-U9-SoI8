@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4585.model.auto;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.usfirst.frc.team4585.model.*;
@@ -30,6 +31,7 @@ public class GhostController implements HuskyClass {
 	
 	private SendableChooser<String> firstAutoChooser = new SendableChooser<>();
 	private HuskyPID anglePID = new HuskyPID(1/90, 0, 0, 0);
+	private VisionCom visCom = new VisionCom();
 	
 	
 	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, HuskyJoy J) {
@@ -153,6 +155,9 @@ public class GhostController implements HuskyClass {
 	@Override
 	public void doAuto() {
 		
+		//pointAtCube();
+		goToCube();
+		
 		//25' 3.5"
 		//left -3452.0
 		//right -3464.0
@@ -161,7 +166,7 @@ public class GhostController implements HuskyClass {
 		//right -14032.0
 		//left -13976.0
 		
-		
+		/*
 		posInfo = tracker.getInfo();
 		if ((posInfo[1]-1) < 90) { // 25 3.5 
 			chassis.giveInfo(new double[] {0.7, angleAccel(posInfo[2], 0)});
@@ -171,7 +176,7 @@ public class GhostController implements HuskyClass {
 		} else {
 			chassis.giveInfo(new double[] {0, 0});
 		}
-		
+		*/
 		
 		
 		//driveTo(new double[] {7, 2});
@@ -192,6 +197,12 @@ public class GhostController implements HuskyClass {
 					counter++;
 				}
 				break;
+			
+			case dropCube:
+				
+				break;
+			
+			//case setArm:
 				
 			case stop:
 				chassis.giveInfo(new double[] {0, 0});
@@ -247,12 +258,59 @@ public class GhostController implements HuskyClass {
 		double[] buffer = {0, 0};
 		posInfo = tracker.getInfo();
 		
-		//buffer[1] = angleAccel(posInfo[2], targAngle);
-		buffer[1] = anglePID.calculate(posInfo[2], targAngle);
+		buffer[1] = angleAccel(posInfo[2], targAngle);
+		//buffer[1] = anglePID.calculate(posInfo[2], targAngle);
 		
 		chassis.giveInfo(buffer);
 		
 		return (posInfo[2] < targAngle + 5) && (posInfo[2] > targAngle - 5);
+	}
+	
+	private boolean pointAtCube() {
+		posInfo = tracker.getInfo();
+		
+		double angle = visCom.getAngleToCube();
+		
+		if (Math.round(angle) != 0) {
+			pointAt(angle + posInfo[2]);
+		}
+		else {
+			chassis.giveInfo(new double[] {0, 0.5});
+		}
+		return true;
+	}
+	
+	private boolean goToCube() {
+		posInfo = tracker.getInfo();
+		
+		double angle = visCom.getAngleToCube();
+		try {
+			if (angle != 0) {
+				if (Double.parseDouble(visCom.get(Requests.NEAREST_CUBE_DISTANCE)) > 3) {
+					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
+				}
+				else {
+					chassis.giveInfo(new double[] {0, angleAccel(posInfo[2], angle + posInfo[2])});
+				}
+			}
+			else {
+				chassis.giveInfo(new double[] {0, 0.5});
+			}
+			
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+		
+	}
+	
+	private boolean dropCube() {
+		return true;
 	}
 	
 	private double angleAccel(double inAngle, double targAngle) {

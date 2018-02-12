@@ -1,5 +1,6 @@
 package org.usfirst.frc.team4585.model.auto;
 
+import org.usfirst.frc.team4585.model.AnalogSonar;
 import org.usfirst.frc.team4585.model.HuskyClass;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -28,6 +29,8 @@ public class PositionTracker implements HuskyClass {
 	
 	private Encoder leftEncoder = new Encoder(LEFT_ENCODER_PORT_A, LEFT_ENCODER_PORT_B);
 	private Encoder rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A, RIGHT_ENCODER_PORT_B);
+	
+	private AnalogSonar frontSonar = new AnalogSonar(1);
 	
 	private BuiltInAccelerometer accel;
 	private ADXRS450_Gyro gyro;
@@ -317,7 +320,7 @@ public class PositionTracker implements HuskyClass {
 
 	@Override
 	public double[] getInfo() {
-		return new double[] {encoderXPos, encoderYPos, modAngle};
+		return new double[] {encoderXPos, encoderYPos, modAngle, frontSonar.getInches()};
 	}
 
 	@Override

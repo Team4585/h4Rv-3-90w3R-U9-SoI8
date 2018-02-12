@@ -130,6 +130,12 @@ public class GhostController implements HuskyClass {
 		
 		}
 		
+		taskList.clear();
+		taskList.add(new AutoTask(TaskType.goTo, new double[] {7, 5}));
+		taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
+		taskList.add(new AutoTask(TaskType.getCube, new double[] {-90}));
+		taskList.add(new AutoTask(TaskType.goTo, new double[] {7, 0}));
+		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
 		
 		/*
@@ -156,7 +162,7 @@ public class GhostController implements HuskyClass {
 	public void doAuto() {
 		
 		//pointAtCube();
-		goToCube();
+		//goToCube();
 		
 		//25' 3.5"
 		//left -3452.0
@@ -182,7 +188,7 @@ public class GhostController implements HuskyClass {
 		//driveTo(new double[] {7, 2});
 		//SmartDashboard.putBoolean("at targ?", pointAt(90));
 		
-		/*
+		
 		if(counter < taskList.size()) {
 			switch(taskList.get(counter).getType()){
 			
@@ -197,7 +203,12 @@ public class GhostController implements HuskyClass {
 					counter++;
 				}
 				break;
-			
+			case getCube:
+				if(goToCube()) {
+					counter++;
+				}
+				break;
+				
 			case dropCube:
 				
 				break;
@@ -213,7 +224,7 @@ public class GhostController implements HuskyClass {
 				
 			}
 		}
-		*/
+		
 		
 	}
 
@@ -281,31 +292,37 @@ public class GhostController implements HuskyClass {
 	}
 	
 	private boolean goToCube() {
+		boolean atCube = false;
+		
 		posInfo = tracker.getInfo();
 		
+		SmartDashboard.putNumber("sonar inch", posInfo[3]);
+		
 		double angle = visCom.getAngleToCube();
-		try {
-			if (angle != 0) {
-				if (Double.parseDouble(visCom.get(Requests.NEAREST_CUBE_DISTANCE)) > 3) {
-					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
+		
+		if (angle != 0) {
+			if (posInfo[3] > 15) {
+				chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
+			}
+			else {
+				if (angle + posInfo[2] < posInfo[2] + 5 && angle + posInfo[2] > posInfo[2] - 5) {
+					chassis.giveInfo(new double[] {0, 0});
+					atCube = true;
 				}
 				else {
 					chassis.giveInfo(new double[] {0, angleAccel(posInfo[2], angle + posInfo[2])});
+					
 				}
+				
 			}
-			else {
-				chassis.giveInfo(new double[] {0, 0.5});
-			}
-			
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		else {
+			chassis.giveInfo(new double[] {0, 0.5});
+		}
+			
 		
-		return true;
+		
+		return atCube;
 		
 	}
 	
@@ -317,12 +334,19 @@ public class GhostController implements HuskyClass {
 		double output;
 		
 		output = (targAngle - inAngle) / 90;
-		
-		if (output < 0.5 && !(output < 0.1)) {
-			output = 0.5;
+		/*
+		if (output < 0.3 && !(output < 0.1)) {
+			output = 0.3;
 		}
-		else if (output > -0.5 && !(output > -0.001)) {
-			output = -0.5;
+		else if (output > -0.3 && !(output > -0.001)) {
+			output = -0.3;
+		}
+		
+		else */if (output < 0.4 && !(output < 0.1)) {
+			output = 0.4;
+		}
+		else if (output > -0.4 && !(output > -0.001)) {
+			output = -0.4;
 		}
 		else if (Math.abs(output) < 0.001) {
 			output = 0;

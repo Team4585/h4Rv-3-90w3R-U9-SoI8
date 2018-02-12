@@ -13,20 +13,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionCom {
 	
-	private final String hostName = "10.45.85.80";
+	private final String hostName = "10.45.85.96";
 	private final int portNumber = 4585;
 	
 	private final int CAMERA_ANGLE = 90;
 	
 	private UsbCamera source;
 	private MjpegServer server;
-	private 
 	
-	double cubeAngle = 0;
+	private double cubeAngle = 0;
 	
 	public void beginCamera() {
 		source = CameraServer.getInstance().startAutomaticCapture();
-		source.setResolution(480, 360);
+		source.setResolution(480, 320);
 		
 		server = CameraServer.getInstance().addServer("VisionCam", 5800);
 		server.setSource(source);

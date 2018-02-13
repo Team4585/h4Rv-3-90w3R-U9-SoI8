@@ -1,15 +1,21 @@
 package org.usfirst.frc.team4585.model;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm implements HuskyClass {
-	private final int CLAW_PORT = 6;
+	private final int ARM_PORT = 6;
+	private double target = 0; 
+	private double currentAngle;
+	private double angle;
 	
-	private Spark arm = new Spark(CLAW_PORT);
+	
+	private Spark arm = new Spark(ARM_PORT);
 	
 	private Joystick joy;
+	private AnalogPotentiometer potentiometer = new AnalogPotentiometer(4);
 	
 	
 	public Arm(Joystick J) {
@@ -28,7 +34,6 @@ public class Arm implements HuskyClass {
 		SmartDashboard.putNumber("Axis 3:", joy.getRawAxis(3));
 		
 		if (joy.getPOV(0) == 0.0) {
-			//claw.set(((-joy.getRawAxis(3) + 1) / 4) + 0.5);
 			
 			arm.set(((-joy.getRawAxis(3) + 1) / 4) + 0.5);
 		}
@@ -50,6 +55,9 @@ public class Arm implements HuskyClass {
 
 	@Override
 	public void doAuto() {
+		currentAngle = potentiometer.get();
+		 double output = (target - currentAngle)/ 90;
+		 arm.set(output);
 		// TODO Auto-generated method stub
 
 	}
@@ -62,6 +70,7 @@ public class Arm implements HuskyClass {
 
 	@Override
 	public void giveInfo(double[] info) {
+		target = info[0];
 		// TODO Auto-generated method stub
 		
 	}

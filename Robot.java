@@ -34,7 +34,6 @@ public class Robot extends IterativeRobot {
 	private Winch winch = new Winch(joy); 
 	private ArmActuator actuator = new ArmActuator(joy);
 	private Lifters lifters = new Lifters(joy, timer);
-	private Potentiometer potentiometer = new Potentiometer();
 	
 
 	/**

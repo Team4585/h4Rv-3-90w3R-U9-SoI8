@@ -15,7 +15,7 @@ public class Arm implements HuskyClass {
 	private Spark arm = new Spark(ARM_PORT);
 	
 	private Joystick joy;
-	private AnalogPotentiometer potentiometer = new AnalogPotentiometer(4);
+	private AnalogPotentiometer pot = new AnalogPotentiometer(4);
 	
 	
 	public Arm(Joystick J) {
@@ -32,7 +32,7 @@ public class Arm implements HuskyClass {
 	public void doTeleop() {
 		
 		SmartDashboard.putNumber("Axis 3:", joy.getRawAxis(3));
-		
+		SmartDashboard.putNumber("pot", pot.get());
 		if (joy.getPOV(0) == 0.0) {
 			
 			arm.set(((-joy.getRawAxis(3) + 1) / 4) + 0.5);
@@ -55,7 +55,7 @@ public class Arm implements HuskyClass {
 
 	@Override
 	public void doAuto() {
-		currentAngle = potentiometer.get();
+		currentAngle = pot.get();
 		 double output = (target - currentAngle)/ 90;
 		 arm.set(output);
 		// TODO Auto-generated method stub

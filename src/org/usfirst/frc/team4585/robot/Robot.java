@@ -33,6 +33,7 @@ public class Robot extends IterativeRobot {
 //  private ArmExtender actuator = new ArmExtender(joy);
 	private Winch winch = new Winch(joy); 
 	private ArmActuator actuator = new ArmActuator(joy);
+	private Lifters lifters = new Lifters(joy, timer);
 	
 
 	/**
@@ -56,6 +57,7 @@ public class Robot extends IterativeRobot {
 		claw.autoInit();
 		tracker.autoInit();
 		actuator.autoInit();
+		lifters.autoInit();
 		
 		
 		timer.reset();

@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Winch implements HuskyClass {
 	
-	private final int WINCH_PORT = 0;
+	private final int WINCH_PORT = 4;
 
 	
 	private Joystick joy;

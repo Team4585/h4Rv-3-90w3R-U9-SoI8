@@ -33,18 +33,20 @@ public class Robot extends IterativeRobot {
 	private Arm arm = new Arm(weaponsJoy);
 	private Claw claw = new Claw(weaponsJoy);
 	private PositionTracker tracker = new PositionTracker(timer);
-  
+
+	private Winch winch = new Winch(weaponsJoy);
+	private ArmActuator actuator = new ArmActuator(weaponsJoy);
+	
+	private Lifters lifters = new Lifters(joy, timer);
+	
+
 	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, actuator, joy);
-	private Winch winch = new Winch(joy); 
-	private ArmActuator actuator = new ArmActuator(joy);
   
-  private ArduinoCom arduino = new ArduinoCom(claw);
+	private ArduinoCom arduino = new ArduinoCom(claw);
 	private VisionCom visCom = new VisionCom();
 	
 	private double oldTime;
   
-	private Lifters lifters = new Lifters(joy, timer);
-
 	
 
 	/**
@@ -122,9 +124,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-    marcus.doTeleop();
-		chassis.doTeleop();	
+		marcus.doTeleop();
 
+		chassis.doTeleop();	
 		arm.doTeleop();
 		claw.doTeleop();
 		tracker.doTeleop();
@@ -151,6 +153,7 @@ public class Robot extends IterativeRobot {
 			oldTime = timer.get();
 		}
 	}
+	
 	
 	@Override
 	public void disabledPeriodic() {

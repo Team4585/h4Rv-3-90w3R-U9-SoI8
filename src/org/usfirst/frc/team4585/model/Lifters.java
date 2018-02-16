@@ -9,7 +9,7 @@ public class Lifters implements HuskyClass {
 	private final int JOY = 1;
 	private final int SECONDS = 105;
 	
-	private final int LIFTERS_PORT = 1;
+	private final int LIFTERS_PORT = 3;
 	private Servo lifters = new Servo(LIFTERS_PORT);
 	
 	private Joystick joy;

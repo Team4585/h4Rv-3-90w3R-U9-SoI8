@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj.Spark;
 public class ArmActuator implements HuskyClass {
 	
 	
-	private final int ARMACT_PORT = 1;
+	private final int ARMACT_PORT = 6;
+	
+	//pot 1
 	
 	private double angle;
 	

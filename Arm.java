@@ -6,19 +6,19 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm implements HuskyClass {
-	private final int ARM_PORT = 7;
+	private final int ARM_PORT = 6;
 	private double target = 0; 
 	private double currentAngle;
 	private double angle;
 	
+	
 	private Spark arm = new Spark(ARM_PORT);
 	
-	private HuskyJoy joy;
-	private AnalogPotentiometer pot = new AnalogPotentiometer(0);
-
+	private Joystick joy;
+	private AnalogPotentiometer pot = new AnalogPotentiometer(4);
 	
 	
-	public Arm(HuskyJoy J) {
+	public Arm(Joystick J) {
 		joy = J;
 	}
 	
@@ -35,13 +35,11 @@ public class Arm implements HuskyClass {
 		SmartDashboard.putNumber("pot", pot.get());
 		if (joy.getPOV(0) == 0.0) {
 			
-			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.5) - 0.4);
-			//arm.set(.4);
+			arm.set(((-joy.getRawAxis(3) + 1) / 4) + 0.5);
 		}
 		if (joy.getPOV(0) == 180.0) {
 			
-			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0.5) - 0.4);
-			//arm.set(-.4);
+			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
 		}
 		if (joy.getPOV(0) == -1.0) {
 			arm.set(0);
@@ -57,10 +55,8 @@ public class Arm implements HuskyClass {
 
 	@Override
 	public void doAuto() {
-		SmartDashboard.putNumber("pot", pot.get());
-		
-		currentAngle = pot.get() * 90;
-		 double output = -(target - currentAngle) / 90;
+		currentAngle = pot.get();
+		 double output = (target - currentAngle)/ 90;
 		 arm.set(output);
 		// TODO Auto-generated method stub
 

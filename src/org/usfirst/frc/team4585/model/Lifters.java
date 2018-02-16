@@ -1,24 +1,24 @@
 package org.usfirst.frc.team4585.model;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 
-
-public class ArmActuator implements HuskyClass {
+public class Lifters implements HuskyClass {
 	
+	private final int JOY = 1;
+	private final int SECONDS = 105;
 	
-	private final int ARMACT_PORT = 6;
-	
-	//pot 1
-	
-	private double angle;
+	private final int LIFTERS_PORT = 3;
+	private Servo lifters = new Servo(LIFTERS_PORT);
 	
 	private Joystick joy;
-	private Spark actuator = new Spark(ARMACT_PORT);
+	private Timer timer;
 	
 	
-	public ArmActuator(Joystick J) {
+	public Lifters(Joystick J, Timer T) {
 		joy = J;
+		timer = T;
 	}
 
 	@Override
@@ -29,22 +29,16 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
-		if (joy.getRawButton(4) == true && joy.getRawButton(6) == false) {
-			actuator.set(0.5);
-		}
-		if (joy.getRawButton(4) == false && joy.getRawButton(6) == true) {
-			actuator.set(-0.5);
-		}
-		if (joy.getRawButton(4) == true && joy.getRawButton(6) == true
-     		|| joy.getRawButton(4) == false && joy.getRawButton(6) == false) {
-			actuator.set(0);
+		if (timer.get() >= SECONDS && joy.getRawButton(JOY) == true) {
+			lifters.setAngle(0);
 		}
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void autoInit() {
+	public void autoInit() {		
+		    lifters.setAngle(30);
 		// TODO Auto-generated method stub
 
 	}

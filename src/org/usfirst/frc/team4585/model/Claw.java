@@ -4,8 +4,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+//.33
+//.34
+
 public class Claw implements HuskyClass {
-	private final int CLAW_PORT = 6;
+	private final int CLAW_PORT = 5;
 	
 	private Spark claw = new Spark(CLAW_PORT);
 	

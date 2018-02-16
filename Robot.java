@@ -1,15 +1,12 @@
 
 package org.usfirst.frc.team4585.robot;
 
-import java.io.IOException;
-
 import org.usfirst.frc.team4585.model.*;
-import org.usfirst.frc.team4585.model.auto.*;
+import org.usfirst.frc.team4585.model.auto.GhostController;
 
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 
@@ -27,24 +24,16 @@ public class Robot extends IterativeRobot {
 	
 	
 	private Timer timer = new Timer();
-	private HuskyJoy joy = new HuskyJoy(JOYSTICK_PORT);
-	private HuskyJoy weaponsJoy = joy;
+	private Joystick joy = new Joystick(JOYSTICK_PORT);
 	private Chassis chassis = new Chassis(joy, timer);
-	private Arm arm = new Arm(weaponsJoy);
-	private Claw claw = new Claw(weaponsJoy);
+	private Arm arm = new Arm(joy);
+	private Claw claw = new Claw(joy);
 	private PositionTracker tracker = new PositionTracker(timer);
-  
-	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, actuator, joy);
+	private GhostController marcus = new GhostController(chassis, arm, claw);
+//  private ArmExtender actuator = new ArmExtender(joy);
 	private Winch winch = new Winch(joy); 
 	private ArmActuator actuator = new ArmActuator(joy);
-  
-  private ArduinoCom arduino = new ArduinoCom(claw);
-	private VisionCom visCom = new VisionCom();
-	
-	private double oldTime;
-  
 	private Lifters lifters = new Lifters(joy, timer);
-
 	
 
 	/**
@@ -53,17 +42,9 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		visCom.beginCamera();
-		
-		tracker.dashInit();
-		marcus.dashInit();
-		
-		arduino.setPins();
-		
-		
-		//DriverStation.getInstance().getGameSpecificMessage();
 		
 	}
+
 
 	/**
 	 * This function is run once each time the robot enters autonomous mode.
@@ -77,7 +58,7 @@ public class Robot extends IterativeRobot {
 		tracker.autoInit();
 		actuator.autoInit();
 		lifters.autoInit();
-
+		
 		
 		timer.reset();
 		timer.start();
@@ -94,8 +75,6 @@ public class Robot extends IterativeRobot {
 		claw.doAuto();
 		tracker.doAuto();
 		
-		arduino.setPins();
-		
 	}
 
 	/**
@@ -103,18 +82,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopInit() {
-		marcus.teleopInit();
 		chassis.teleopInit();
 		arm.teleopInit();
 		claw.teleopInit();
 		tracker.teleopInit();
 		actuator.teleopInit();
 		
-		timer.reset();
-		timer.start();
-		
-		oldTime = timer.get();
-
 	}
 
 	/**
@@ -122,21 +95,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-    marcus.doTeleop();
-		chassis.doTeleop();	
-
+		chassis.doTeleop();
 		arm.doTeleop();
 		claw.doTeleop();
 		tracker.doTeleop();
 		actuator.doTeleop();
-		
-		arduino.setPins();
-		/*
-		if (timer.get() - oldTime > 1) {
-			visCom.doStuff();
-			oldTime = timer.get();
-		}*/
-		
 	}
 
 	/**
@@ -144,16 +107,5 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		arduino.setPins();
-		
-		if (timer.get() - oldTime > 1) {
-			visCom.doStuff();
-			oldTime = timer.get();
-		}
-	}
-	
-	@Override
-	public void disabledPeriodic() {
-		arduino.setPins();
 	}
 }

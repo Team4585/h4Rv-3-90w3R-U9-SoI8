@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm implements HuskyClass {
-	private final int ARM_PORT = 6;
+
+	private final int ARM_PORT = 7;
 	private double target = 0; 
 	private double currentAngle;
 	private double angle;
@@ -14,11 +15,12 @@ public class Arm implements HuskyClass {
 	
 	private Spark arm = new Spark(ARM_PORT);
 	
-	private Joystick joy;
+	private HuskyJoy joy;
 	private AnalogPotentiometer pot = new AnalogPotentiometer(4);
+
 	
 	
-	public Arm(Joystick J) {
+	public Arm(HuskyJoy J) {
 		joy = J;
 	}
 	
@@ -35,11 +37,13 @@ public class Arm implements HuskyClass {
 		SmartDashboard.putNumber("pot", pot.get());
 		if (joy.getPOV(0) == 0.0) {
 			
-			arm.set(((-joy.getRawAxis(3) + 1) / 4) + 0.5);
+			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.5) - 0.4);
+			//arm.set(.5);
 		}
 		if (joy.getPOV(0) == 180.0) {
 			
-			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
+			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0.5) - 0.4);
+			//arm.set(-.5);
 		}
 		if (joy.getPOV(0) == -1.0) {
 			arm.set(0);

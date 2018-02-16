@@ -18,10 +18,10 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	
 	
-	Joystick joy;
+	HuskyJoy joy;
 	Timer timer;
 	
-	public Chassis(Joystick J, Timer T) {
+	public Chassis(HuskyJoy J, Timer T) {
 		super(new Spark(RIGHT_DRIVE_PORT), new Spark(LEFT_DRIVE_PORT));
 		
 		joy = J;
@@ -37,11 +37,11 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	@Override
 	public void doTeleop() {
-		arcadeDrive(-joy.getRawAxis(1) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5), joy.getRawAxis(2) * (((-joy.getRawAxis(3) + 1) / 4) + 0.5));
+		arcadeDrive(info[0], info[1]);
 		
 		
-		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));
-		SmartDashboard.putNumber("in: ",sonar.getInches());
+		SmartDashboard.putNumber("joystick axis two:", joy.getRawAxis(2));
+		SmartDashboard.putNumber("in: ", sonar.getInches());
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	@Override
 	public void doAuto() {
-		arcadeDrive(info[0], 0);
+		arcadeDrive(info[0], info[1]);
 		
 		
 		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));

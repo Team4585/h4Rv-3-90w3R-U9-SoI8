@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4585.model;
+package org.usfirst.frc.team4585.model.auto;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

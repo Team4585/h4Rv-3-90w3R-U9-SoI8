@@ -30,7 +30,7 @@ public class PositionTracker implements HuskyClass {
 	private Encoder leftEncoder = new Encoder(LEFT_ENCODER_PORT_A, LEFT_ENCODER_PORT_B);
 	private Encoder rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A, RIGHT_ENCODER_PORT_B);
 	
-	private AnalogSonar frontSonar = new AnalogSonar(1);
+	private AnalogSonar frontSonar = new AnalogSonar(3);
 	
 	private BuiltInAccelerometer accel;
 	private ADXRS450_Gyro gyro;

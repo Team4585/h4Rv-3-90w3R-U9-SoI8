@@ -25,6 +25,7 @@ public class GhostController implements HuskyClass {
 	
 	private Chassis chassis;
 	private Arm arm;
+	private ArmActuator actuator;
 	private Claw claw;
 	private PositionTracker tracker;
 	private HuskyJoy joy;
@@ -34,9 +35,10 @@ public class GhostController implements HuskyClass {
 	private VisionCom visCom = new VisionCom();
 	
 	
-	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, HuskyJoy J) {
+	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, ArmActuator AA, HuskyJoy J) {
 		chassis = Ch;
 		arm = A;
+		
 		claw = Cl;
 		tracker = T;
 		joy = J;
@@ -56,6 +58,8 @@ public class GhostController implements HuskyClass {
 	public void teleopInit() {
 		teleTargPos = new double[] {0, 0};
 		teleTargAngle = 0;
+		
+		
 
 	}
 
@@ -63,6 +67,8 @@ public class GhostController implements HuskyClass {
 	public void doTeleop() {
 		
 		posInfo = tracker.getInfo();
+		
+		SmartDashboard.putNumber("sonar inch", posInfo[3]);
 		
 			//normal drive
 		chassis.giveInfo(new double[] {-joy.getSliderScaled(1), joy.getSliderScaled(2)});
@@ -203,6 +209,7 @@ public class GhostController implements HuskyClass {
 					counter++;
 				}
 				break;
+				
 			case getCube:
 				if(goToCube()) {
 					counter++;
@@ -210,10 +217,18 @@ public class GhostController implements HuskyClass {
 				break;
 				
 			case dropCube:
-				
+				pointAt(taskList.get(counter).getInfo()[0]);
+				counter++;
 				break;
 			
-			//case setArm:
+			case setArmDeg:
+				arm.giveInfo(taskList.get(counter).getInfo());
+				counter++;
+				break;
+				
+			case setArmDist:
+				actuator.giveInfo(taskList.get(counter).getInfo());
+				break;
 				
 			case stop:
 				chassis.giveInfo(new double[] {0, 0});
@@ -302,7 +317,7 @@ public class GhostController implements HuskyClass {
 		
 		if (angle != 0) {
 			if (posInfo[3] > 15) {
-				chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
+				chassis.giveInfo(new double[] {0.55, angleAccel(posInfo[2], angle + posInfo[2])});
 			}
 			else {
 				if (angle + posInfo[2] < posInfo[2] + 5 && angle + posInfo[2] > posInfo[2] - 5) {

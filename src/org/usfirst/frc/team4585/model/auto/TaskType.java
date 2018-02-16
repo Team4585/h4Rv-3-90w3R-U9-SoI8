@@ -4,7 +4,8 @@ public enum TaskType {
 	goTo,
 	dropCube,
 	getCube,
-	setArm,
+	setArmDeg,
+	setArmDist,
 	pointAt,
 	stop,
 }

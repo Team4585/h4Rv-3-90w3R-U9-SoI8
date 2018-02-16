@@ -13,29 +13,44 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionCom {
 	
-	private final String hostName = "10.45.85.96";
-	private final int portNumber = 4585;
+	private final String hostName = "10.45.85.80";
+	private final int portNumber = 5801;
 	
 	private final int CAMERA_ANGLE = 90;
 	
 	private UsbCamera source;
 	private MjpegServer server;
+	private int exposure = 50;
 	
 	private double cubeAngle = 0;
 	
 	public void beginCamera() {
 		source = CameraServer.getInstance().startAutomaticCapture();
 		source.setResolution(480, 320);
+		source.setFPS(60);
 		
 		server = CameraServer.getInstance().addServer("VisionCam", 5800);
 		server.setSource(source);
+	}
+	
+	public void updateExposure(){
+		
+		
+		try {
+			exposure = Integer.parseInt(get(Requests.AVERAGE_BRIGHTNESS));
+		} catch (NumberFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		source.setExposureManual(exposure);
 		
 	}
 	
 	public void doStuff() {
 		
 		try {
-			SmartDashboard.putString("cube distance", get(Requests.NEAREST_CUBE_DISTANCE));
+			SmartDashboard.putString("vision cube distance", get(Requests.NEAREST_CUBE_DISTANCE));
 			
 			double width = Integer.parseInt(get(Requests.WIDTH));
 			String cubeXY = get(Requests.NEAREST_CUBE);

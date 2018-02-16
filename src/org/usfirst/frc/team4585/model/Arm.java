@@ -5,17 +5,18 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
 public class Arm implements HuskyClass {
+
 	private final int ARM_PORT = 7;
 	private double target = 0; 
 	private double currentAngle;
 	private double angle;
-	
+
 	private Spark arm = new Spark(ARM_PORT);
-	
+
 	private HuskyJoy joy;
 	private AnalogPotentiometer pot = new AnalogPotentiometer(0);
-
 	
 	
 	public Arm(HuskyJoy J) {

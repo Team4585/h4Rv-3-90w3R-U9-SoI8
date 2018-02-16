@@ -33,20 +33,20 @@ public class Robot extends IterativeRobot {
 	private Arm arm = new Arm(weaponsJoy);
 	private Claw claw = new Claw(weaponsJoy);
 	private PositionTracker tracker = new PositionTracker(timer);
-	
+
 	private Winch winch = new Winch(weaponsJoy);
 	private ArmActuator actuator = new ArmActuator(weaponsJoy);
 	
 	private Lifters lifters = new Lifters(joy, timer);
 	
+
 	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, actuator, joy);
-	
+  
 	private ArduinoCom arduino = new ArduinoCom(claw);
 	private VisionCom visCom = new VisionCom();
 	
 	private double oldTime;
-
-	
+  
 	
 
 	/**

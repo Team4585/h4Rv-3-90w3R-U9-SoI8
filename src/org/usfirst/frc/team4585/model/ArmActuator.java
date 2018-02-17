@@ -1,17 +1,19 @@
 package org.usfirst.frc.team4585.model;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 
 
 public class ArmActuator implements HuskyClass {
 	
-	
+	private final int POT_PORT = 1;
 	private final int ARMACT_PORT = 6;
 	
-	//pot 1
+	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 20.0d * Math.PI * 1.5d);
 	
-	private double angle;
+	private double targPos;
 	
 	private Joystick joy;
 	private Spark actuator = new Spark(ARMACT_PORT);
@@ -51,10 +53,11 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void doAuto() {
-		// TODO Auto-generated method stub
+		actuator.set(targPos - pot.get());	//pid it
 
 	}
-
+	
+	
 	@Override
 	public double[] getInfo() {
 		// TODO Auto-generated method stub
@@ -63,7 +66,7 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void giveInfo(double[] info) {
-		// TODO Auto-generated method stub
+		targPos = info[0];
 
 	}
 

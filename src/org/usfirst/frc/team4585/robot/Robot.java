@@ -23,13 +23,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 	
-	private final int JOYSTICK_PORT = 0;
+	private final int DRIVE_PORT = 0;
+	private final int WEAPONS_PORT = 1;
 	
 	
 	private Timer timer = new Timer();
-	private HuskyJoy joy = new HuskyJoy(JOYSTICK_PORT);
-	private HuskyJoy weaponsJoy = joy;
-	private Chassis chassis = new Chassis(joy, timer);
+	
+	private HuskyJoy driveJoy = new HuskyJoy(DRIVE_PORT);
+	private HuskyJoy weaponsJoy = driveJoy;
+	//private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
+	
+	private Chassis chassis = new Chassis(driveJoy, timer);
 	private Arm arm = new Arm(weaponsJoy);
 	private Claw claw = new Claw(weaponsJoy);
 	private PositionTracker tracker = new PositionTracker(timer);
@@ -37,10 +41,10 @@ public class Robot extends IterativeRobot {
 	private Winch winch = new Winch(weaponsJoy);
 	private ArmActuator actuator = new ArmActuator(weaponsJoy);
 	
-	private Lifters lifters = new Lifters(joy, timer);
+	private Lifters lifters = new Lifters(driveJoy, timer);
 	
 
-	private GhostController marcus = new GhostController(chassis, arm, claw, actuator, winch, tracker, joy, weaponsJoy);
+	private GhostController marcus = new GhostController(chassis, arm, claw, actuator, winch, tracker, driveJoy, weaponsJoy);
   
 	private ArduinoCom arduino = new ArduinoCom(claw);
 	private VisionCom visCom = new VisionCom();

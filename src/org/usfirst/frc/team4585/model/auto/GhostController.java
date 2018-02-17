@@ -37,6 +37,7 @@ public class GhostController implements HuskyClass {
 	private VisionCom visCom = new VisionCom();
 	
 	
+	
 	public GhostController(Chassis Ch, Arm A, Claw Cl, ArmActuator AA, Winch W, PositionTracker T,  HuskyJoy DJ, HuskyJoy WJ) {
 		chassis = Ch;
 		arm = A;
@@ -80,31 +81,17 @@ public class GhostController implements HuskyClass {
 		chassis.giveInfo(new double[] {-driveJoy.getSliderScaled(1), driveJoy.getSliderScaled(2)});
 		
 			//climb
-		/*
+		
 		if (weaponsJoy.getRawButton(2)) {
 			double[] actInfo = actuator.getInfo();
 			double[] winchInfo = winch.getInfo();
 			
-			double diff = Math.abs(actInfo[0] - winchInfo[0]);
-			
-			double[] actSpeed = {1};
-			double[] winchSpeed = {1};
-			
-			if (actInfo[0] > winchInfo[0]) {
-				winchSpeed[0] += diff / 2.0d;
-			}
-			else {
-				actSpeed[0] += diff / 2.0d;
-			}
-			
-			actuator.giveInfo(actSpeed);
-			winch.giveInfo(winchSpeed);
+			actuator.giveInfo(winchInfo);
 		}
 		else {
 			actuator.giveInfo(new double[] {0});
-			winch.giveInfo(new double[] {0});
 		}
-		*/
+		
 		
 		
 		

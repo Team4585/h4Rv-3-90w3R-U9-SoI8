@@ -14,7 +14,7 @@ public class Winch implements HuskyClass {
 	private Joystick joy;
 	private Spark winch = new Spark(WINCH_PORT);
 	
-	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 20 * Math.PI);
+	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 20.0d * Math.PI * 0.77d);
 	
 	private double speed;
 	private double position;
@@ -57,7 +57,7 @@ public class Winch implements HuskyClass {
 	@Override
 	public double[] getInfo() {
 		// TODO Auto-generated method stub
-		return null;
+		return new double[] {pot.get()};
 	}
 
 	@Override

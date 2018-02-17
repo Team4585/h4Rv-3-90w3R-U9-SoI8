@@ -35,15 +35,16 @@ public class VisionCom {
 	
 	public void updateExposure(){
 		
-		
 		try {
-			exposure = Integer.parseInt(get(Requests.AVERAGE_BRIGHTNESS));
+			int brightness = 50;
+			brightness = Integer.parseInt(get(Requests.AVERAGE_BRIGHTNESS));
+			exposure = 50 - brightness;
+			
+			source.setExposureManual(exposure);
 		} catch (NumberFormatException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			source.setExposureAuto();
 		}
-		
-		source.setExposureManual(exposure);
 		
 	}
 	

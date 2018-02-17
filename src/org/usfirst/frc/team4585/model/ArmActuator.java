@@ -11,6 +11,8 @@ public class ArmActuator implements HuskyClass {
 	private final int POT_PORT = 1;
 	private final int ARMACT_PORT = 6;
 	
+	private final double ACT_SPEED = 0.1;
+	
 	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 20.0d * Math.PI * 1.5d);
 	
 	private double targPos;
@@ -31,6 +33,16 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
+		
+		if (joy.getRawButton(4) && !joy.getRawButton(6)) {
+			targPos += ACT_SPEED;
+		}
+		else if (!joy.getRawButton(4) && joy.getRawButton(6)) {
+			targPos -= ACT_SPEED;
+		}
+		actuator.set((targPos - pot.get()) / 1);
+		
+		/*
 		if (joy.getRawButton(4) == true && joy.getRawButton(6) == false) {
 			actuator.set(0.5);
 		}
@@ -41,7 +53,7 @@ public class ArmActuator implements HuskyClass {
      		|| joy.getRawButton(4) == false && joy.getRawButton(6) == false) {
 			actuator.set(0);
 		}
-		// TODO Auto-generated method stub
+		*/
 
 	}
 

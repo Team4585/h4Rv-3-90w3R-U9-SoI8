@@ -40,7 +40,7 @@ public class Robot extends IterativeRobot {
 	private Lifters lifters = new Lifters(joy, timer);
 	
 
-	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, actuator, joy);
+	private GhostController marcus = new GhostController(chassis, arm, claw, actuator, winch, tracker, joy, weaponsJoy);
   
 	private ArduinoCom arduino = new ArduinoCom(claw);
 	private VisionCom visCom = new VisionCom();
@@ -91,10 +91,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		marcus.doAuto();
+		
 		chassis.doAuto();
 		arm.doAuto();
 		claw.doAuto();
 		tracker.doAuto();
+		actuator.doAuto();
 		
 		arduino.setPins();
 		

@@ -17,7 +17,7 @@ public class GhostController implements HuskyClass {
 	private int counter;
 	
 	private double[] chassisInfo;
-	private double[] armInfo;
+	
 	private double[] clawInfo;
 	private double[] posInfo;
 	private double[] teleTargPos;	//experemental
@@ -26,22 +26,28 @@ public class GhostController implements HuskyClass {
 	private Chassis chassis;
 	private Arm arm;
 	private ArmActuator actuator;
+	private Winch winch;
 	private Claw claw;
 	private PositionTracker tracker;
-	private HuskyJoy joy;
+	private HuskyJoy driveJoy;
+	private HuskyJoy weaponsJoy;
 	
 	private SendableChooser<String> firstAutoChooser = new SendableChooser<>();
 	private HuskyPID anglePID = new HuskyPID(1/90, 0, 0, 0);
 	private VisionCom visCom = new VisionCom();
 	
 	
-	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, ArmActuator AA, HuskyJoy J) {
+	public GhostController(Chassis Ch, Arm A, Claw Cl, ArmActuator AA, Winch W, PositionTracker T,  HuskyJoy DJ, HuskyJoy WJ) {
 		chassis = Ch;
 		arm = A;
 		
+		actuator = AA;
+		winch = W;
+		
 		claw = Cl;
 		tracker = T;
-		joy = J;
+		driveJoy = DJ;
+		weaponsJoy = WJ;
 		
 		
 	}
@@ -71,7 +77,36 @@ public class GhostController implements HuskyClass {
 		SmartDashboard.putNumber("sonar inch", posInfo[3]);
 		
 			//normal drive
-		chassis.giveInfo(new double[] {-joy.getSliderScaled(1), joy.getSliderScaled(2)});
+		chassis.giveInfo(new double[] {-driveJoy.getSliderScaled(1), driveJoy.getSliderScaled(2)});
+		
+			//climb
+		/*
+		if (weaponsJoy.getRawButton(2)) {
+			double[] actInfo = actuator.getInfo();
+			double[] winchInfo = winch.getInfo();
+			
+			double diff = Math.abs(actInfo[0] - winchInfo[0]);
+			
+			double[] actSpeed = {1};
+			double[] winchSpeed = {1};
+			
+			if (actInfo[0] > winchInfo[0]) {
+				winchSpeed[0] += diff / 2.0d;
+			}
+			else {
+				actSpeed[0] += diff / 2.0d;
+			}
+			
+			actuator.giveInfo(actSpeed);
+			winch.giveInfo(winchSpeed);
+		}
+		else {
+			actuator.giveInfo(new double[] {0});
+			winch.giveInfo(new double[] {0});
+		}
+		*/
+		
+		
 		
 		/*	//angle accel turn
 		teleTargAngle += joy.getSliderScaled(2) * 5;
@@ -89,6 +124,8 @@ public class GhostController implements HuskyClass {
 		teleTargPos[1] += (-joy.getSliderScaled(1) / 10);
 		driveTo(teleTargPos);
 		*/
+		
+		
 		
 	}
 

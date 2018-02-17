@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Lifters implements HuskyClass {
 	
-	private final int JOY = 1;
 	private final int SECONDS = 105;
 	
 	private final int LIFTERS_PORT = 3;
@@ -29,7 +28,7 @@ public class Lifters implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
-		if (timer.get() >= SECONDS && joy.getRawButton(JOY) == true) {
+		if (timer.get() >= SECONDS && joy.getRawButton(2)) {
 			lifters.setAngle(0);
 		}
 		// TODO Auto-generated method stub

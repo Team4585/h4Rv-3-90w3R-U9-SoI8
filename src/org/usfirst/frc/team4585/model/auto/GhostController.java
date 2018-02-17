@@ -82,7 +82,7 @@ public class GhostController implements HuskyClass {
 		
 			//climb
 		
-		if (weaponsJoy.getRawButton(2)) {
+		if (weaponsJoy.getRawButton(1)) {
 			double[] actInfo = actuator.getInfo();
 			double[] winchInfo = winch.getInfo();
 			

@@ -33,7 +33,7 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
-		
+		/*
 		if (joy.getRawButton(4) && !joy.getRawButton(6)) {
 			targPos += ACT_SPEED;
 		}
@@ -41,8 +41,8 @@ public class ArmActuator implements HuskyClass {
 			targPos -= ACT_SPEED;
 		}
 		actuator.set((targPos - pot.get()) / 1);
+		*/
 		
-		/*
 		if (joy.getRawButton(4) == true && joy.getRawButton(6) == false) {
 			actuator.set(0.5);
 		}
@@ -53,7 +53,7 @@ public class ArmActuator implements HuskyClass {
      		|| joy.getRawButton(4) == false && joy.getRawButton(6) == false) {
 			actuator.set(0);
 		}
-		*/
+		
 
 	}
 

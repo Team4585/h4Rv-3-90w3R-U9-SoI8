@@ -30,8 +30,8 @@ public class Robot extends IterativeRobot {
 	private Timer timer = new Timer();
 	
 	private HuskyJoy driveJoy = new HuskyJoy(DRIVE_PORT);
-	private HuskyJoy weaponsJoy = driveJoy;
-	//private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
+	//private HuskyJoy weaponsJoy = driveJoy;
+	private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
 	
 	private Chassis chassis = new Chassis(driveJoy, timer);
 	private Arm arm = new Arm(weaponsJoy);
@@ -96,7 +96,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		marcus.doAuto();
 		
-		chassis.doAuto();
+		//chassis.doAuto();
 		arm.doAuto();
 		claw.doAuto();
 		tracker.doAuto();
@@ -117,6 +117,7 @@ public class Robot extends IterativeRobot {
 		claw.teleopInit();
 		tracker.teleopInit();
 		actuator.teleopInit();
+		lifters.teleopInit();
 		
 		timer.reset();
 		timer.start();
@@ -137,6 +138,7 @@ public class Robot extends IterativeRobot {
 		claw.doTeleop();
 		tracker.doTeleop();
 		actuator.doTeleop();
+		lifters.doTeleop();
 		
 		arduino.setPins();
 		/*
@@ -163,7 +165,7 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void disabledPeriodic() {
-		visCom.updateExposure();
+		//visCom.updateExposure();
 		
 		arduino.setPins();
 	}

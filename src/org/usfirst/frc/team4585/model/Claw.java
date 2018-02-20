@@ -34,10 +34,10 @@ public class Claw implements HuskyClass {
 		SmartDashboard.putNumber("Axis 3:", joy.getRawAxis(3));
 		
 		if (joy.getRawButton(5) == true && joy.getRawButton(3) == false) {
-			claw.set(addAmpLimit(0.5));
+			claw.set(0.5);
 		}
 		if (joy.getRawButton(5) == false && joy.getRawButton(3) == true) {
-			claw.set(-addAmpLimit(0.5));
+			claw.set(-0.5);
 		}
 		if (joy.getRawButton(5) == false && joy.getRawButton(3) == false) {
 			claw.set(0);

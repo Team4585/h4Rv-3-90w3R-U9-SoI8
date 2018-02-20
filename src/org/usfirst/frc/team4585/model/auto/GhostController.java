@@ -191,7 +191,7 @@ public class GhostController implements HuskyClass {
 	@Override
 	public void doAuto() {
 		
-		//arm.giveInfo(new double[] {-20});
+		arm.giveInfo(new double[] {-20});
 		
 		//pointAtCube();
 		//goToCube();
@@ -254,6 +254,7 @@ public class GhostController implements HuskyClass {
 				
 			case setArmDist:
 				actuator.giveInfo(taskList.get(counter).getInfo());
+				counter++;
 				break;
 				
 			case stop:

@@ -41,6 +41,9 @@ public class ArmActuator implements HuskyClass {
 	@Override
 	public void doTeleop() {
 		
+		
+		
+		
 //		/*
 		if (joy.getRawButton(4) && !joy.getRawButton(6)) {
 			targPos += ACT_SPEED;
@@ -48,9 +51,11 @@ public class ArmActuator implements HuskyClass {
 		else if (!joy.getRawButton(4) && joy.getRawButton(6)) {
 			targPos -= ACT_SPEED;
 		}
-		else {
+		
+		if (joy.getRawButtonReleased(4) || joy.getRawButtonReleased(6)) {
 			//targPos = pot.get();
 		}
+		
 		
 		actuator.set(addAmpLimit((pot.get() - targPos) / 2));
 		SmartDashboard.putNumber("Targ Extend", targPos);
@@ -80,7 +85,7 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void doAuto() {
-		actuator.set(targPos - pot.get());	//pid it
+		//actuator.set(targPos - pot.get());	//pid it
 
 	}
 	

@@ -21,6 +21,7 @@ public class ArmActuator implements HuskyClass {
 	
 	private double targPos;
 	private double ampOffSet = 0;
+	private boolean climbing = false;
 	
 	private Joystick joy;
 	private Spark actuator = new Spark(ARMACT_PORT);
@@ -40,19 +41,17 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
-		
-		
-		
-		
 //		/*
-		if (joy.getRawButton(4) && !joy.getRawButton(6)) {
+		if (climbing) {
+			
+		}
+		else if (joy.getRawButton(4) && !joy.getRawButton(6)) {
 			targPos += ACT_SPEED;
 		}
 		else if (!joy.getRawButton(4) && joy.getRawButton(6)) {
 			targPos -= ACT_SPEED;
 		}
-		
-		if (joy.getRawButtonReleased(4) || joy.getRawButtonReleased(6)) {
+		else if (joy.getRawButtonReleased(4) || joy.getRawButtonReleased(6)) {
 			//targPos = pot.get();
 		}
 		
@@ -101,6 +100,11 @@ public class ArmActuator implements HuskyClass {
 			ampOffSet = 0;
 		}
 		return input - ampOffSet;
+	}
+	
+	public boolean setCliming(boolean state) {
+		climbing = state;
+		return climbing;
 	}
 	
 	@Override

@@ -34,12 +34,7 @@ public class Winch implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
-		if (joy.getRawButton(1) == true) {
-			winch.setSpeed(0.5);
-		}
-		if (joy.getRawButton(1) == false) {
-			winch.setSpeed(0);
-		}
+		winch.set(speed);
 	}
 
 	@Override
@@ -62,7 +57,7 @@ public class Winch implements HuskyClass {
 
 	@Override
 	public void giveInfo(double[] info) {
-		// TODO Auto-generated method stub
+		speed = info[0];
 
 	}
 

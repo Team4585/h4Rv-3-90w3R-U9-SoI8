@@ -93,6 +93,7 @@ public class GhostController implements HuskyClass {
 		else {
 			winch.giveInfo(new double[] {0});
 			actuator.setCliming(false);
+			actuator.giveArmAngle(arm.getInfo()[0]);
 		}
 		
 		

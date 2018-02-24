@@ -395,37 +395,36 @@ public class GhostController implements HuskyClass {
 		posInfo = tracker.getInfo();
 		
 		double angle = info[0];
+		boolean dropped = false;
 		
 		if (posInfo[2] < angle + 5 && posInfo[2] > angle - 5) {
-			chassis.giveInfo(new double[] {0, 0});
-			
-		}
-		else {
-			
-		}
-		
-		
-		if (info[1] == 0) {
-			if (posInfo[3] > 15) {
-				chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
-			}
-			else {
-				if (posInfo[2] < angle + 5 && posInfo[2] > angle - 5) {
-					chassis.giveInfo(new double[] {0, 0});
-					
+			if (info[1] == 0) {
+				if (posInfo[3] > 15) {
+					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
 				}
 				else {
-					chassis.giveInfo(new double[] {0, angleAccel(posInfo[2], angle + posInfo[2])});
+					chassis.giveInfo(new double[] {0, 0});
+					claw.giveInfo(new double[] {0});
+					dropped = true;
 				}
-				
+			}
+			else {
+				if (posInfo[4] < 24) {
+					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
+				}
+				else {
+					chassis.giveInfo(new double[] {0, 0});
+					claw.giveInfo(new double[] {0});
+					dropped = true;
+				}
 			}
 		}
 		else {
-			
+			chassis.giveInfo(new double[] {0, angleAccel(posInfo[2], angle + posInfo[2])});
 		}
 		
 		
-		return true;
+		return dropped;
 	}
 	
 	private double angleAccel(double inAngle, double targAngle) {

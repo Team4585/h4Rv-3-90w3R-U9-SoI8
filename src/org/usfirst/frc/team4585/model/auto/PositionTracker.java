@@ -31,6 +31,7 @@ public class PositionTracker implements HuskyClass {
 	private Encoder rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A, RIGHT_ENCODER_PORT_B);
 	
 	private AnalogSonar frontSonar = new AnalogSonar(4);
+	private AnalogSonar backSonar = new AnalogSonar(6);
 	
 	private BuiltInAccelerometer accel;
 	private ADXRS450_Gyro gyro;
@@ -320,7 +321,7 @@ public class PositionTracker implements HuskyClass {
 
 	@Override
 	public double[] getInfo() {
-		return new double[] {encoderXPos, encoderYPos, modAngle, frontSonar.getInches()};
+		return new double[] {encoderXPos, encoderYPos, modAngle, frontSonar.getInches(), backSonar.getInches()};
 	}
 
 	@Override

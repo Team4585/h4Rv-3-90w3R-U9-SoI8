@@ -8,20 +8,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Arm implements HuskyClass {
-
+	
 	private final int ARM_PORT = 7;
-	private final int POT_PORT = 5;
+	private final int POT_PORT = 6;
 	
 	private double targAngle = 0;
 	private double currentAngle;
 	private double angle;
 	private boolean oldPOV;
-
+	
 	private Spark arm = new Spark(ARM_PORT);
 	private PowerDistributionPanel powReg = new PowerDistributionPanel();
-
+	
 	private HuskyJoy joy;
-	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 3600, -2000);
+	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 3600, -1741);
 	
 	
 	public Arm(HuskyJoy J) {
@@ -59,6 +59,7 @@ public class Arm implements HuskyClass {
 		}
 		
 		else if (joy.getPOV(0) == -1.0) {
+			//arm.set(0);
 			arm.set(-(targAngle - pot.get()) / 90);
 		}
 		SmartDashboard.putNumber("arm amps", powReg.getCurrent(13));

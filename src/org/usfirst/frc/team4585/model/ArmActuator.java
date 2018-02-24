@@ -49,23 +49,32 @@ public class ArmActuator implements HuskyClass {
 	@Override
 	public void doTeleop() {
 //		/*
-		if (climbing) {
-			targPos = winchPos;
+		/*if (climbing) {
+			actuator.set(-0.2);
 		}
-		else if (joy.getRawButton(6) && !joy.getRawButton(4)) {
+		else */if (joy.getRawButton(6) && !joy.getRawButton(4)) {
 			targPos += ACT_SPEED;
 			moving = true;
+			actuator.set(0.5);
 		}
 		else if (!joy.getRawButton(6) && joy.getRawButton(4)) {
 			targPos -= ACT_SPEED;
 			moving = true;
+			actuator.set(-0.5);
 		}
 		else if (moving) {
 			targPos = pot.get();
 			moving = false;
 		}
+		else {
+			actuator.set(0);
+			//actuator.set((pot.get() - distanceLimit(targPos)) / 2);
+		}
 		
-		actuator.set((pot.get() - distanceLimit(targPos)) / 2);
+		//actuator.set((pot.get() - distanceLimit(targPos)) / 2);
+		
+		
+		
 		SmartDashboard.putNumber("Targ Extend", targPos);
 //		*/
 		SmartDashboard.putNumber("extend pot", pot.get());

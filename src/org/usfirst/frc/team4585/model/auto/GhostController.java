@@ -86,9 +86,14 @@ public class GhostController implements HuskyClass {
 			double[] actInfo = actuator.getInfo();
 			double[] winchInfo = winch.getInfo();
 			
+			
+			//(((-getRawAxis(3) + 1) / 4) + 0.5)
+			winch.giveInfo(new double[] {-(((-weaponsJoy.getRawAxis(3) + 1) / 4) + 0.5)});
 			actuator.setCliming(true);
-			winch.giveInfo(new double[] {0.5});
-			actuator.giveInfo(winchInfo);
+			//actuator.giveInfo(winchInfo);
+		}
+		else if (weaponsJoy.getRawButton(7)) {
+			winch.giveInfo(new double[] {(((-weaponsJoy.getRawAxis(3) + 1) / 4) + 0.5)});
 		}
 		else {
 			winch.giveInfo(new double[] {0});
@@ -124,6 +129,7 @@ public class GhostController implements HuskyClass {
 	public void autoInit() {
 		String gameInfo = DriverStation.getInstance().getGameSpecificMessage();
 		taskList.clear();
+		
 		
 		switch (firstAutoChooser.getSelected()) {
 		case "sw_in":
@@ -194,8 +200,18 @@ public class GhostController implements HuskyClass {
 
 	@Override
 	public void doAuto() {
+		/*
+		arm.giveInfo(new double[] {20});
+		actuator.giveArmAngle(arm.getInfo()[0]);
+		actuator.giveInfo(new double[] {20});
+		*/
 		
-		arm.giveInfo(new double[] {-20});
+		/*
+		//claw.giveInfo(new double[] {1});
+		if (claw.getInfo()[0] != 1) {
+			claw.giveInfo(new double[] {1});
+		}
+		*/
 		
 		//pointAtCube();
 		//goToCube();
@@ -208,14 +224,16 @@ public class GhostController implements HuskyClass {
 		//right -14032.0
 		//left -13976.0
 		
-		/*
+		/*		calibrate encoders
 		posInfo = tracker.getInfo();
-		if ((posInfo[1]-1) < 90) { // 25 3.5 
+		if ((posInfo[1]-1) < 90) { // 25 3.5
 			chassis.giveInfo(new double[] {0.7, angleAccel(posInfo[2], 0)});
 			
-		} else if ((posInfo[1]-1) < 100) {
+		}
+		else if ((posInfo[1]-1) < 100) {
 			chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], 0)});
-		} else {
+		}
+		else {
 			chassis.giveInfo(new double[] {0, 0});
 		}
 		*/
@@ -224,7 +242,7 @@ public class GhostController implements HuskyClass {
 		//driveTo(new double[] {7, 2});
 		//SmartDashboard.putBoolean("at targ?", pointAt(90));
 		
-		/*
+		
 		if(counter < taskList.size()) {
 			switch(taskList.get(counter).getType()){
 			
@@ -247,8 +265,9 @@ public class GhostController implements HuskyClass {
 				break;
 				
 			case dropCube:
-				pointAt(taskList.get(counter).getInfo()[0]);
-				counter++;
+				if (dropCube(taskList.get(counter).getInfo())) {
+					counter++;
+				}
 				break;
 			
 			case setArmDeg:
@@ -270,7 +289,7 @@ public class GhostController implements HuskyClass {
 				
 			}
 		}
-		*/
+		
 		
 	}
 
@@ -372,7 +391,40 @@ public class GhostController implements HuskyClass {
 		
 	}
 	
-	private boolean dropCube() {
+	private boolean dropCube(double[] info) {
+		posInfo = tracker.getInfo();
+		
+		double angle = info[0];
+		
+		if (posInfo[2] < angle + 5 && posInfo[2] > angle - 5) {
+			chassis.giveInfo(new double[] {0, 0});
+			
+		}
+		else {
+			
+		}
+		
+		
+		if (info[1] == 0) {
+			if (posInfo[3] > 15) {
+				chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
+			}
+			else {
+				if (posInfo[2] < angle + 5 && posInfo[2] > angle - 5) {
+					chassis.giveInfo(new double[] {0, 0});
+					
+				}
+				else {
+					chassis.giveInfo(new double[] {0, angleAccel(posInfo[2], angle + posInfo[2])});
+				}
+				
+			}
+		}
+		else {
+			
+		}
+		
+		
 		return true;
 	}
 	

@@ -1,8 +1,10 @@
 package org.usfirst.frc.team4585.model;
 
+import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //.33
@@ -11,15 +13,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Claw implements HuskyClass {
 	private final int CLAW_PORT = 5;
 	private final double MAX_AMPS = 3;
+	private final int MOVE_TIME = 2;
 	
 	private Spark claw = new Spark(CLAW_PORT);
 	private PowerDistributionPanel powReg = new PowerDistributionPanel();
 	private HuskyJoy joy;
+	private Timer timer = new Timer();
 	
 	private double ampOffSet = 0;
+	private boolean targState = false; // open
+	private boolean oldState = true; // closed
 	
 	public Claw(HuskyJoy J) {
 		joy = J;
+		timer.reset();
+		timer.start();
 	}
 	
 	@Override
@@ -55,7 +63,17 @@ public class Claw implements HuskyClass {
 
 	@Override
 	public void doAuto() {
-		// TODO Auto-generated method stub
+		if (targState != oldState) {
+			timer.reset();
+			timer.start();
+			oldState = targState;
+		}
+		if (targState) {
+			claw.set(0.3);
+		}
+		else {
+			claw.set(-0.3);
+		}
 
 	}
 	
@@ -77,13 +95,13 @@ public class Claw implements HuskyClass {
 
 	@Override
 	public double[] getInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new double[] {(timer.get() > MOVE_TIME) ? 1:0};
 	}
 
 	@Override
 	public void giveInfo(double[] info) {
-		// TODO Auto-generated method stub
+		targState = (info[0] == 1.0) ? true:false;
 		
 	}
 

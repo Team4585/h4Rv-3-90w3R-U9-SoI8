@@ -39,8 +39,22 @@ public class Claw implements HuskyClass {
 	@Override
 	public void doTeleop() {
 		
-		SmartDashboard.putNumber("Axis 3:", joy.getRawAxis(3));
+		if (joy.getRawButton(5) == true && joy.getRawButton(3) == false) {
+			targState = false;
+		}
+		else if (joy.getRawButton(5) == false && joy.getRawButton(3) == true) {
+			claw.set(0.5);
+			targState = true;
+		}
+		else {
+			claw.set(0);
+		}
 		
+		if (!targState) {
+			claw.set(-0.5);
+		}
+		
+		/*
 		if (joy.getRawButton(5) == true && joy.getRawButton(3) == false) {
 			claw.set(0.5);
 		}
@@ -53,6 +67,7 @@ public class Claw implements HuskyClass {
 		if (joy.getRawButton(5) == true && joy.getRawButton(3) == true) {
 			claw.set(0);
 		}
+		*/
 	}
 
 	@Override
@@ -69,10 +84,10 @@ public class Claw implements HuskyClass {
 			oldState = targState;
 		}
 		if (targState) {
-			claw.set(0.3);
+			claw.set(0.5);
 		}
 		else {
-			claw.set(-0.3);
+			claw.set(-0.5);
 		}
 
 	}

@@ -41,13 +41,13 @@ public class Arm implements HuskyClass {
 		SmartDashboard.putNumber("targ angle", targAngle);
 		SmartDashboard.putNumber("arm pot", pot.get());
 		if (joy.getPOV(0) == 0.0) {
-			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.3) );
+			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0) * 1);
 			//arm.set(.5);
 			
 			oldPOV = true;
 		}
 		else if (joy.getPOV(0) == 180.0) {
-			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0.3));
+			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0) * 0.5);
 			//arm.set(-.5);
 			
 			oldPOV = true;

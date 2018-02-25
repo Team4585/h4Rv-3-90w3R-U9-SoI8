@@ -26,7 +26,7 @@ public class HuskyPID {
 		
 		double dt = currTime - oldTime;
 		
-		double error = targVal - inVal;
+		double error = inVal - targVal;
 		double errSum = (error * dt) + (oldError * dt) + (olderError * dt); // assumes same dt values
 		double errDer = (error - oldError) / dt;
 		

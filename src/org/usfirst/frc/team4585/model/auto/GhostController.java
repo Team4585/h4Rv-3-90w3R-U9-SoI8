@@ -202,8 +202,9 @@ public class GhostController implements HuskyClass {
 
 	@Override
 	public void doAuto() {
+		
+		arm.giveInfo(new double[] {0});
 		/*
-		arm.giveInfo(new double[] {20});
 		actuator.giveArmAngle(arm.getInfo()[0]);
 		actuator.giveInfo(new double[] {20});
 		*/
@@ -244,7 +245,7 @@ public class GhostController implements HuskyClass {
 		//driveTo(new double[] {7, 2});
 		//SmartDashboard.putBoolean("at targ?", pointAt(90));
 		
-		
+		/*
 		if(counter < taskList.size()) {
 			switch(taskList.get(counter).getType()){
 			
@@ -291,7 +292,7 @@ public class GhostController implements HuskyClass {
 				
 			}
 		}
-		
+		*/
 		
 	}
 

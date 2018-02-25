@@ -57,7 +57,7 @@ public class Claw implements HuskyClass {
 
 	@Override
 	public void autoInit() {
-		// TODO Auto-generated method stub
+		targState = true;
 
 	}
 

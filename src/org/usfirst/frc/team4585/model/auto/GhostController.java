@@ -194,6 +194,8 @@ public class GhostController implements HuskyClass {
 		taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
 		*/
+		
+		
 		counter = 0;
 
 	}

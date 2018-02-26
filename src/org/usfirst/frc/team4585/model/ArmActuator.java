@@ -17,7 +17,7 @@ public class ArmActuator implements HuskyClass {
 	
 	private final double ACT_SPEED = 0.10;
 	
-	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, -20.0d * Math.PI * 1.5d, 62.8);
+	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, -20.0d * Math.PI * 1.5d, 40.2d);
 	private PowerDistributionPanel powReg = new PowerDistributionPanel();
 	
 	private double targPos;
@@ -26,6 +26,7 @@ public class ArmActuator implements HuskyClass {
 	private double armAngle;
 	private boolean climbing = false;
 	private boolean moving;
+	private boolean oldMoving;
 	
 	
 	private Joystick joy;
@@ -42,7 +43,8 @@ public class ArmActuator implements HuskyClass {
 		targPos = pot.get();
 		
 		climbing = false;
-		moving = true;
+		moving = false;
+		oldMoving = false;
 
 	}
 
@@ -56,26 +58,25 @@ public class ArmActuator implements HuskyClass {
 		if (joy.getRawButton(6) && !joy.getRawButton(4)) {
 			targPos += ACT_SPEED;
 			moving = true;
-			actuator.set(0.5);
+			//actuator.set(0.5);
 		}
 		else if (!joy.getRawButton(6) && joy.getRawButton(4)) {
 			targPos -= ACT_SPEED;
 			moving = true;
-			actuator.set(-0.5);
-		}
-		else if (moving) {
-			targPos = pot.get();
-			moving = false;
+			//actuator.set(-0.5);
 		}
 		else {
-			//actuator.set(0);
-			actuator.set((distanceLimit(targPos) - pot.get()) / 5);
+			moving = false;
 		}
 		
-		//actuator.set((pot.get() - distanceLimit(targPos)) / 2);
+		if (oldMoving && !moving) {
+			targPos = pot.get();
+		}
+		actuator.set((distanceLimit(targPos) - pot.get()) / 2);
 		
+		oldMoving = moving;
 		
-		
+		SmartDashboard.putNumber("distance limit", distanceLimit(targPos));
 		SmartDashboard.putNumber("Targ Extend", targPos);
 //		*/
 		SmartDashboard.putNumber("extend pot", pot.get());
@@ -97,21 +98,20 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void autoInit() {
-		// TODO Auto-generated method stub
+		targPos = pot.get();
 
 	}
 
 	@Override
 	public void doAuto() {
-		//actuator.set(targPos - pot.get());	//pid it
-		actuator.set((pot.get() - distanceLimit(targPos)) / 2);
+		actuator.set((distanceLimit(targPos) - pot.get()) / 2);
 
 	}
 	
 	private double distanceLimit(double targDist) {
 		double limitDist = targDist;
 		if (targDist * Math.cos(Math.toRadians(armAngle)) >= MAX_EXTEND) {
-			limitDist = 15 / Math.cos(Math.toRadians(armAngle));
+			limitDist = MAX_EXTEND / Math.cos(Math.toRadians(armAngle));
 		}
 		
 		return limitDist;
@@ -150,7 +150,8 @@ public class ArmActuator implements HuskyClass {
 
 	@Override
 	public void giveInfo(double[] info) {
-		winchPos = info[0];
+		targPos = info[0];
+		//winchPos = info[0];
 
 	}
 

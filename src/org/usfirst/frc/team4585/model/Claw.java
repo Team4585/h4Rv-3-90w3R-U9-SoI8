@@ -32,7 +32,7 @@ public class Claw implements HuskyClass {
 	
 	@Override
 	public void teleopInit() {
-		// TODO Auto-generated method stub
+		targState = true;
 
 	}
 
@@ -72,7 +72,7 @@ public class Claw implements HuskyClass {
 
 	@Override
 	public void autoInit() {
-		targState = true;
+		targState = false;
 
 	}
 

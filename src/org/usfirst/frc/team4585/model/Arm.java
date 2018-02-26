@@ -21,7 +21,7 @@ public class Arm implements HuskyClass {
 	private HuskyPID armPid = new HuskyPID(2.5, 0, 0, 100);
 	
 	private HuskyJoy joy;
-	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 3600, -1759);
+	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 3600, -1737);
 	
 	
 	public Arm(HuskyJoy J) {
@@ -68,7 +68,7 @@ public class Arm implements HuskyClass {
 
 	@Override
 	public void autoInit() {
-		// TODO Auto-generated method stub
+		targAngle = pot.get();
 
 	}
 

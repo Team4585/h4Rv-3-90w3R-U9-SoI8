@@ -96,7 +96,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		marcus.doAuto();
 		
-		//chassis.doAuto();
+		chassis.doAuto();
 		arm.doAuto();
 		claw.doAuto();
 		tracker.doAuto();

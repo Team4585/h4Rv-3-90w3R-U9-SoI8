@@ -168,6 +168,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		visCom.updateExposure();
+		SmartDashboard.putNumber("sonar", tracker.getInfo()[3]);
 		
 		arduino.setPins();
 	}

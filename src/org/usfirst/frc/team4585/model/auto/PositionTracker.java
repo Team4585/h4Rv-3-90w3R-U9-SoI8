@@ -20,10 +20,10 @@ public class PositionTracker implements HuskyClass {
 	private final double LEFT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
 	private final double RIGHT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
 	*/
-	private final double LEFT_DISTANCE_PER_PULSE = (617.0d / 6.0d) / 13976.0d;
-	private final double RIGHT_DISTANCE_PER_PULSE = (617.0d / 6.0d) / 14032.0d;
+	private final double LEFT_DISTANCE_PER_PULSE = Constants.LEFT_DISTANCE_PER_PULSE;
+	private final double RIGHT_DISTANCE_PER_PULSE = Constants.RIGHT_DISTANCE_PER_PULSE;
 	
-	private final double ACCEL_FACTOR = 32.175197; //32.175197
+	private final double ACCEL_FACTOR = 32.175197; //32.175197 gs to feet/s^2
 	private final double ACCEL_DEAD = 0.1;
 	private final double VEL_DEAD = 0.1 * ACCEL_FACTOR;
 	

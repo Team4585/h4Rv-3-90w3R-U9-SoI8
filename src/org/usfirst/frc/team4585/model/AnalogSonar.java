@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.AnalogInput;
 public class AnalogSonar{
 	private AnalogInput input;
 	int sampleBuffer;
-	int millimetersPerVolt=976;//constant set by range finder
-	double correctionCoeff = 1.05;
+	int millimetersPerVolt = 976;//constant set by range finder
+	double correctionCoeff = 1.125;
 	//TODO change correction coefficient in case we go to nationals
 	int defaultSampleBuffer=20;
 

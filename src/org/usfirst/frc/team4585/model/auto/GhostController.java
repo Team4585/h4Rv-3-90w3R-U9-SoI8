@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GhostController implements HuskyClass {
 	
+	private final int SWITCH_DROP_DISTANCE = 15;
+	private final int SCALE_DROP_DISTANCE = 25;
+	
 	private ArrayList<AutoTask> taskList = new ArrayList<AutoTask>();
 	
 	private int counter;
@@ -140,6 +143,8 @@ public class GhostController implements HuskyClass {
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {17, 9}));
 			}
 			taskList.add(new AutoTask(TaskType.pointAt, new double[] {0}));
+			taskList.add(new AutoTask(TaskType.dropCube, new double[] {0, 0}));
+			
 			
 			break;
 		
@@ -147,9 +152,11 @@ public class GhostController implements HuskyClass {
 			if (gameInfo.charAt(0) == 'L') {
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {6, 13}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {90, 0}));
 			} else {
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {21, 13}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {-90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {-90, 0}));
 			}
 			
 			break;
@@ -158,9 +165,11 @@ public class GhostController implements HuskyClass {
 			if (gameInfo.charAt(1) == 'L') {
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {4, 26}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {90, 1}));
 			} else {
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {22, 26}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {-90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {-90, 1}));
 			}
 			
 			break;
@@ -396,7 +405,7 @@ public class GhostController implements HuskyClass {
 		
 		if (posInfo[2] < angle + 5 && posInfo[2] > angle - 5) {
 			if (info[1] == 0) {
-				if (posInfo[3] > 15) {
+				if (posInfo[3] > SWITCH_DROP_DISTANCE) {
 					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
 				}
 				else {
@@ -406,7 +415,7 @@ public class GhostController implements HuskyClass {
 				}
 			}
 			else {
-				if (posInfo[4] < 24) {
+				if (posInfo[4] < SCALE_DROP_DISTANCE) {
 					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle + posInfo[2])});
 				}
 				else {

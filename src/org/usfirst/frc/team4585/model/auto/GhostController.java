@@ -58,7 +58,7 @@ public class GhostController implements HuskyClass {
 	
 	public void dashInit() {
 		firstAutoChooser.addDefault("Switch inside", "sw_in");
-		firstAutoChooser.addObject("Switch outside", "sw_out");
+		firstAutoChooser.addObject("Switch outside (not center)", "sw_out");
 		firstAutoChooser.addObject("Scale outside", "sc_out");
 		firstAutoChooser.addObject("Auto run", "auto_run");
 		SmartDashboard.putData("Robot Auto Destenation", firstAutoChooser);

@@ -30,8 +30,8 @@ public class Robot extends IterativeRobot {
 	private Timer timer = new Timer();
 	
 	private HuskyJoy driveJoy = new HuskyJoy(DRIVE_PORT);
-	private HuskyJoy weaponsJoy = driveJoy;
-	//private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
+//	private HuskyJoy weaponsJoy = driveJoy;
+	private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
 	
 	private Chassis chassis = new Chassis(driveJoy, timer);
 	private Arm arm = new Arm(weaponsJoy);
@@ -76,13 +76,15 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		marcus.autoInit();
+		
 		chassis.autoInit();
 		arm.autoInit();
 		claw.autoInit();
 		tracker.autoInit();
 		actuator.autoInit();
 		lifters.autoInit();
+		
+		marcus.autoInit();
 
 		
 		timer.reset();
@@ -103,6 +105,7 @@ public class Robot extends IterativeRobot {
 		actuator.doAuto();
 		
 		arduino.setPins();
+		SmartDashboard.putNumber("sonar", tracker.getInfo()[3]);
 		
 	}
 
@@ -142,6 +145,7 @@ public class Robot extends IterativeRobot {
 		lifters.doTeleop();
 		winch.doTeleop();
 		
+		SmartDashboard.putNumber("sonar", tracker.getInfo()[3]);
 		arduino.setPins();
 		/*
 		if (timer.get() - oldTime > 1) {

@@ -43,7 +43,7 @@ public class Claw implements HuskyClass {
 			targState = false;
 		}
 		else if (joy.getRawButton(5) == false && joy.getRawButton(3) == true) {
-			claw.set(0.5);
+			claw.set(0.6);
 			targState = true;
 		}
 		else {
@@ -51,7 +51,7 @@ public class Claw implements HuskyClass {
 		}
 		
 		if (!targState) {
-			claw.set(-0.5);
+			claw.set(-0.6);
 		}
 		
 		/*
@@ -116,7 +116,7 @@ public class Claw implements HuskyClass {
 
 	@Override
 	public void giveInfo(double[] info) {
-		targState = (info[0] == 1.0) ? true:false;
+		targState = (info[0] != 1);
 		
 	}
 

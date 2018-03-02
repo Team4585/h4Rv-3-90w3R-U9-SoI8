@@ -21,7 +21,7 @@ public class Arm implements HuskyClass {
 	private HuskyPID armPid = new HuskyPID(2.5, 0, 0, 100);
 	
 	private HuskyJoy joy;
-	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 3600, -1737);
+	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 3600, Constants.ARM_POT_OFFSET);
 	
 	
 	public Arm(HuskyJoy J) {
@@ -41,13 +41,13 @@ public class Arm implements HuskyClass {
 		SmartDashboard.putNumber("targ angle", targAngle);
 		SmartDashboard.putNumber("arm pot", pot.get());
 		if (joy.getPOV(0) == 0.0) {
-			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0) * 1);
+			arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.3) * 1);
 			//arm.set(.5);
 			
 			oldPOV = true;
 		}
 		else if (joy.getPOV(0) == 180.0) {
-			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0) * 0.5);
+			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0.3) * 0.5);
 			//arm.set(-.5);
 			
 			oldPOV = true;

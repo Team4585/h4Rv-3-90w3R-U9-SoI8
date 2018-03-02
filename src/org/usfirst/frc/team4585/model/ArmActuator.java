@@ -11,13 +11,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ArmActuator implements HuskyClass {
 	
 	private final double MAX_AMPS = 2;
-	private final double MAX_EXTEND = 10;
+	private final double MAX_EXTEND = 15;
 	private final int POT_PORT = 1;
 	private final int ARMACT_PORT = 6;
 	
 	private final double ACT_SPEED = 0.10;
 	
-	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, -20.0d * Math.PI * 1.5d, 51.0d);
+	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, -20.0d * Math.PI * 1.5d, Constants.EXTEND_POT_OFFSET);
 	private PowerDistributionPanel powReg = new PowerDistributionPanel();
 	
 	private double targPos;
@@ -58,7 +58,7 @@ public class ArmActuator implements HuskyClass {
 		if (joy.getRawButton(6) && !joy.getRawButton(4)) {
 			targPos += ACT_SPEED;
 			moving = true;
-			actuator.set(0.7);
+			actuator.set(0.5);
 		}
 		else if (!joy.getRawButton(6) && joy.getRawButton(4)) {
 			targPos -= ACT_SPEED;

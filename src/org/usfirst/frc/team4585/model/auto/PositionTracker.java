@@ -118,8 +118,8 @@ public class PositionTracker implements HuskyClass {
 		accelYLoc *= ACCEL_FACTOR;
 		//accelYLoc = 0;
 		
-		modAngle = ((gyro.getAngle() + 180) % 360) -180;
-		//modAngle = 30;
+		//modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		modAngle = modAngle(gyro.getAngle());
 		
 		SmartDashboard.putNumber("accel X", accelXLoc);
 		SmartDashboard.putNumber("accel Y", accelYLoc);
@@ -157,7 +157,8 @@ public class PositionTracker implements HuskyClass {
 		accelXPos += velX2 * dt;
 		accelYPos += velY2 * dt;
 		
-		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+		encoderVelocity = (/*leftEncoder.getRate() + */rightEncoder.getRate()) / 1;
+//		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
 		
 		SmartDashboard.putNumber("R encoder dist", rightEncoder.getDistance());
 		SmartDashboard.putNumber("L encoder dist", leftEncoder.getDistance());
@@ -216,7 +217,7 @@ public class PositionTracker implements HuskyClass {
 		switch (stationChooser.getSelected()){
 		
 		case 0:
-			encoderXPos = 7;
+			encoderXPos = 3;
 			break;
 			
 		case 1:
@@ -261,7 +262,11 @@ public class PositionTracker implements HuskyClass {
 		
 		accelXLoc = 0.1;
 		accelYLoc = 0;
-		modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		
+		
+		
+		//modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		modAngle = modAngle(gyro.getAngle());
 		
 		SmartDashboard.putNumber("accel X", accelXLoc);
 		SmartDashboard.putNumber("accel Y", accelYLoc);
@@ -293,7 +298,8 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("Left pulse", leftEncoder.get());
 		SmartDashboard.putNumber("Right pulse", rightEncoder.get());
 		
-		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+//		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+		encoderVelocity = (leftEncoder.getRate()) / 1;
 		
 		encoderXPos += Math.sin(Math.toRadians(modAngle)) * encoderVelocity * dt;
 		encoderYPos += Math.cos(Math.toRadians(modAngle)) * encoderVelocity * dt;
@@ -319,6 +325,17 @@ public class PositionTracker implements HuskyClass {
 		oldTime = timer.get();
 	}
 
+	private double modAngle(double in) {
+		double out;
+		if (in >= 0) {
+			out = ((in + 180) % 360) -180;
+		}
+		else {
+			out = -(((-in + 180) % 360) - 180);
+		}
+		return out;
+	}
+	
 	@Override
 	public double[] getInfo() {
 		return new double[] {encoderXPos, encoderYPos, modAngle, frontSonar.getInches(), backSonar.getInches()};

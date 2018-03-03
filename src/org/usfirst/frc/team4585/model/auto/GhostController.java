@@ -7,6 +7,7 @@ import org.usfirst.frc.team4585.model.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -38,6 +39,7 @@ public class GhostController implements HuskyClass {
 	private SendableChooser<String> firstAutoChooser = new SendableChooser<>();
 	private HuskyPID anglePID = new HuskyPID(1/90, 0, 0, 0);
 	private VisionCom visCom = new VisionCom();
+	private Timer timer = new Timer();
 	
 	
 	
@@ -146,11 +148,11 @@ public class GhostController implements HuskyClass {
 			taskList.add(new AutoTask(TaskType.setArmDeg, new double[] {45}));
 			taskList.add(new AutoTask(TaskType.setArmDist, new double[] {10}));
 			if (gameInfo.charAt(0) == 'L') {
-				taskList.add(new AutoTask(TaskType.goTo, new double[] {8, 9}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {8, 7}));
 			} else {
-				taskList.add(new AutoTask(TaskType.goTo, new double[] {17, 9}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {17, 7}));
 			}
-			//taskList.add(new AutoTask(TaskType.pointAt, new double[] {0}));
+			taskList.add(new AutoTask(TaskType.pointAt, new double[] {0}));
 			taskList.add(new AutoTask(TaskType.dropCube, new double[] {0, 0}));
 			
 			
@@ -211,12 +213,18 @@ public class GhostController implements HuskyClass {
 		
 		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
+		timer.reset();
+		timer.start();
 		counter = 0;
 
 	}
 
 	@Override
 	public void doAuto() {
+		
+		if (timer.get() > 13) {
+			claw.giveInfo(new double[] {0});
+		}
 		
 //		arm.giveInfo(new double[] {45});
 //		dropCube(new double[] {0, 0});
@@ -347,7 +355,7 @@ public class GhostController implements HuskyClass {
 		SmartDashboard.putNumber("TargAngle", targAngle);
 		
 		buffer[0] = ((Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1])) || 
-				HuskyMath.gSmallAngDiff(posInfo[2], targAngle) > 30)? 0:0.7;
+				HuskyMath.gSmallAngDiff(posInfo[2], targAngle) > 90)? 0:0.7;
 		buffer[1] = angleAccel(posInfo[2], targAngle);
 		
 		chassis.giveInfo(buffer);

@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 	
+	private final boolean DO_VISION = false;		//vision setting!!!!
+	
 	private final int DRIVE_PORT = 0;
 	private final int WEAPONS_PORT = 1;
 	
@@ -59,7 +61,10 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		visCom.beginCamera();
+		if (DO_VISION) {
+			visCom.beginCamera();
+		}
+		
 		
 		tracker.dashInit();
 		marcus.dashInit();
@@ -171,8 +176,13 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void disabledPeriodic() {
-		visCom.updateExposure();
+		if (DO_VISION) {
+			visCom.updateExposure();
+		}
 		SmartDashboard.putNumber("sonar", tracker.getInfo()[3]);
+		SmartDashboard.putNumber("arm pot", arm.getInfo()[0]);
+		SmartDashboard.putNumber("extend pot", actuator.getInfo()[0]);
+		
 		
 		arduino.setPins();
 	}

@@ -146,8 +146,7 @@ public class ArmActuator implements HuskyClass {
 	
 	@Override
 	public double[] getInfo() {
-		// TODO Auto-generated method stub
-		return null;
+		return new double[] {pot.get()};
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ArmActuator implements HuskyClass {
 	
 	private final double MAX_AMPS = 2;
-	private final double MAX_EXTEND = 15;
+	private final double MAX_EXTEND = 13;
 	private final int POT_PORT = 1;
 	private final int ARMACT_PORT = 6;
 	

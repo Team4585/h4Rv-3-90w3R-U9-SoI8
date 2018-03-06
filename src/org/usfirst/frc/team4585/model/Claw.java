@@ -43,7 +43,7 @@ public class Claw implements HuskyClass {
 			targState = false;
 		}
 		else if (joy.getRawButton(5) == false && joy.getRawButton(3) == true) {
-			claw.set(0.6);
+			claw.set(0.3);
 			targState = true;
 		}
 		else {

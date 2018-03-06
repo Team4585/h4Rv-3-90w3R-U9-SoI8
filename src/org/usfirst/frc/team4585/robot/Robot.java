@@ -64,6 +64,9 @@ public class Robot extends IterativeRobot {
 		if (DO_VISION) {
 			visCom.beginCamera();
 		}
+		else {
+			CameraServer.getInstance().startAutomaticCapture();
+		}
 		
 		
 		tracker.dashInit();
@@ -72,7 +75,6 @@ public class Robot extends IterativeRobot {
 		arduino.setPins();
 		
 		
-		//DriverStation.getInstance().getGameSpecificMessage();
 		
 	}
 

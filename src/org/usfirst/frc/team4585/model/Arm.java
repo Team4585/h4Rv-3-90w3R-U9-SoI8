@@ -18,7 +18,7 @@ public class Arm implements HuskyClass {
 	
 	private Spark arm = new Spark(ARM_PORT);
 	private PowerDistributionPanel powReg = new PowerDistributionPanel();
-	private HuskyPID armPid = new HuskyPID(2.5, 0, 0, 100);
+	private HuskyPID armPid = new HuskyPID(2.5, 0, 0, 50);
 	
 	private HuskyJoy joy;
 	private AnalogPotentiometer pot = new AnalogPotentiometer(POT_PORT, 3600, Constants.ARM_POT_OFFSET);
@@ -42,7 +42,7 @@ public class Arm implements HuskyClass {
 		SmartDashboard.putNumber("arm pot", pot.get());
 		if (joy.getPOV(0) == 0.0) {
 			if (pot.get() < 88) {
-				arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.3) * 0.7);
+				arm.set( - (((-joy.getRawAxis(3) + 1) / 4) + 0.2) * 0.7);
 			}
 			else {
 				arm.set(0);
@@ -53,7 +53,7 @@ public class Arm implements HuskyClass {
 			oldPOV = true;
 		}
 		else if (joy.getPOV(0) == 180.0) {
-			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0.3) * 0.5);
+			arm.set((((-joy.getRawAxis(3) + 1) / 4) + 0.2) * 0.4);
 			//arm.set(-.5);
 			
 			oldPOV = true;
@@ -85,7 +85,7 @@ public class Arm implements HuskyClass {
 		double currentAngle = pot.get();
 		//double output = -(targAngle - currentAngle) / 90;
 		
-		arm.set(armPid.calculate(currentAngle, targAngle) / 90.0d);
+		arm.set((armPid.calculate(currentAngle, targAngle) / 90.0d) * 1);
 
 	}
 

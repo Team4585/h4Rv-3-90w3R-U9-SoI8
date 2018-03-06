@@ -148,9 +148,9 @@ public class GhostController implements HuskyClass {
 			taskList.add(new AutoTask(TaskType.setArmDeg, new double[] {45}));
 			taskList.add(new AutoTask(TaskType.setArmDist, new double[] {10}));
 			if (gameInfo.charAt(0) == 'L') {
-				taskList.add(new AutoTask(TaskType.goTo, new double[] {8, 7}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {8, 6}));
 			} else {
-				taskList.add(new AutoTask(TaskType.goTo, new double[] {17, 7}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {17, 6}));
 			}
 			taskList.add(new AutoTask(TaskType.pointAt, new double[] {0}));
 			taskList.add(new AutoTask(TaskType.dropCube, new double[] {0, 0}));
@@ -194,7 +194,7 @@ public class GhostController implements HuskyClass {
 			break;
 		
 		case "auto_run":
-			taskList.add(new AutoTask(TaskType.goTo, new double[] {x, 12}));
+			taskList.add(new AutoTask(TaskType.goTo, new double[] {x, 13}));
 			
 			break;
 			
@@ -206,10 +206,9 @@ public class GhostController implements HuskyClass {
 		
 		/*
 		taskList.clear();
-		taskList.add(new AutoTask(TaskType.pointAt, new double[] {135}));
-		taskList.add(new AutoTask(TaskType.pointAt, new double[] {-135}));
-		
+		taskList.add(new AutoTask(TaskType.setArmDeg, new double[] {45}));
 		*/
+		
 		
 		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
@@ -354,8 +353,8 @@ public class GhostController implements HuskyClass {
 		SmartDashboard.putNumber("targY", I[1]);
 		SmartDashboard.putNumber("TargAngle", targAngle);
 		
-		buffer[0] = ((Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1])) || 
-				HuskyMath.gSmallAngDiff(posInfo[2], targAngle) > 90)? 0:0.7;
+		buffer[0] = ((Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1]))/* || 
+				HuskyMath.gSmallAngDiff(posInfo[2], targAngle) > 90*/)? 0:0.6;
 		buffer[1] = angleAccel(posInfo[2], targAngle);
 		
 		chassis.giveInfo(buffer);
@@ -477,23 +476,28 @@ public class GhostController implements HuskyClass {
 		double output;
 		
 //		/*
+		/*
 		if (inAngle < 0) {
 			inAngle = 360 - Math.abs(inAngle);
 		}
 		if (targAngle < 0) {
 			targAngle = 360 - Math.abs(targAngle);
 		}
-		
+		*/
+		/*
 		double angleDiff = (targAngle - inAngle);
 		double modAngleDiff;
 		if (angleDiff >= 0) {
-			modAngleDiff = ((angleDiff + 180) % 360) -180;
+			modAngleDiff = ((angleDiff + 180) % 360) - 180;
 		}
 		else {
 			modAngleDiff = -(((-angleDiff + 180) % 360) - 180);
 //			modAngleDiff = -(((-modAngleDiff + 180) % 360) - 180);
 		}
 //		*/
+		
+		double angleDiff = (targAngle - inAngle);
+		double modAngleDiff = ((angleDiff + 180) % 360) - 180;
 		
 //		double modAngleDiff = HuskyMath.gSmallAngDiff(inAngle, targAngle);
 		

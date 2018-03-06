@@ -27,7 +27,7 @@ public class HuskyPID {
 		double dt = currTime - oldTime;
 		
 		double error = inVal - targVal;
-		double errSum = (error * dt) + (oldError * dt) + (olderError * dt); // assumes same dt values
+		double errSum = (error * dt) + (oldError * dt) + (olderError * dt); // assumes same dt values -- what?
 		double errDer = (error - oldError) / dt;
 		
 		double buffer = 0;
@@ -40,6 +40,13 @@ public class HuskyPID {
 		
 		olderError = oldError;
 		oldError = error;
+		
+		if (buffer > maxOut) {
+			buffer = maxOut;
+		}
+		if (buffer < -maxOut) {
+			buffer = -maxOut;
+		}
 		
 		SmartDashboard.putNumber("PID out", buffer);
 		

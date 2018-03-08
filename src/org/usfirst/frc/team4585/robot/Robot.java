@@ -65,7 +65,7 @@ public class Robot extends IterativeRobot {
 			visCom.beginCamera();
 		}
 		else {
-			CameraServer.getInstance().startAutomaticCapture();
+//			CameraServer.getInstance().startAutomaticCapture();
 		}
 		
 		

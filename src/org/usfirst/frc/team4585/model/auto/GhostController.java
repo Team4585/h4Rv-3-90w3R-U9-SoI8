@@ -2,9 +2,11 @@ package org.usfirst.frc.team4585.model.auto;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.usfirst.frc.team4585.model.*;
 
+import GridNav.Vertex;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,6 +21,7 @@ public class GhostController implements HuskyClass {
 	private ArrayList<AutoTask> taskList = new ArrayList<AutoTask>();
 	
 	private int counter;
+	private int subCount;
 	
 	private double[] chassisInfo;
 	
@@ -26,6 +29,9 @@ public class GhostController implements HuskyClass {
 	private double[] posInfo;
 	private double[] teleTargPos;	//experemental
 	private double teleTargAngle;
+	
+	private double[] targPoint;
+	private Iterator<Vertex> itr;
 	
 	private Chassis chassis;
 	private Arm arm;
@@ -40,6 +46,7 @@ public class GhostController implements HuskyClass {
 	private HuskyPID anglePID = new HuskyPID(1/90, 0, 0, 0);
 	private VisionCom visCom = new VisionCom();
 	private Timer timer = new Timer();
+	private HuskyPathFinder pathFinder = new HuskyPathFinder("./maps/testMap.map");
 	
 	
 	
@@ -204,10 +211,10 @@ public class GhostController implements HuskyClass {
 		
 		}
 		
-		/*
+//		/*
 		taskList.clear();
-		taskList.add(new AutoTask(TaskType.setArmDeg, new double[] {45}));
-		*/
+		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {4, 4}));
+//		*/
 		
 		
 		
@@ -281,6 +288,12 @@ public class GhostController implements HuskyClass {
 			
 			case goTo:
 				if(driveTo(taskList.get(counter).getInfo())) {
+					counter++;
+				}
+				break;
+			
+			case goToMaping:
+				if(driveToMaping(taskList.get(counter).getInfo())) {
 					counter++;
 				}
 				break;
@@ -361,6 +374,34 @@ public class GhostController implements HuskyClass {
 		
 		
 		return (Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1]));
+	}
+	
+	private boolean driveToMaping(double[] I) {
+		posInfo = tracker.getInfo();
+		
+		if (targPoint == I) {
+			pathFinder.setPoints(posInfo[0], posInfo[1], I[0], I[1]);
+			itr = pathFinder.calculatePath().iterator();
+		}
+		
+		if (itr.hasNext()) {
+			
+			Vertex next = itr.next();
+			
+			int X = next.getX();
+			int Y = next.getY();
+			
+			if(driveTo(new double[] {X, Y})) {
+				itr.remove();
+			}
+			
+			
+			return false;
+		}
+		else {
+			return true;
+		}
+		
 	}
 	
 	

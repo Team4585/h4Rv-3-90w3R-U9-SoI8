@@ -298,8 +298,8 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("Left pulse", leftEncoder.get());
 		SmartDashboard.putNumber("Right pulse", rightEncoder.get());
 		
-//		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
-		encoderVelocity = (leftEncoder.getRate()) / 1;
+		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+//		encoderVelocity = (leftEncoder.getRate()) / 1;
 		
 		encoderXPos += Math.sin(Math.toRadians(modAngle)) * encoderVelocity * dt;
 		encoderYPos += Math.cos(Math.toRadians(modAngle)) * encoderVelocity * dt;

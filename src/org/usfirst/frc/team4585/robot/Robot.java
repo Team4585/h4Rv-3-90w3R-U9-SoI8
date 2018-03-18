@@ -143,8 +143,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		marcus.doTeleop();
-
-		chassis.doTeleop();	
+		
+		chassis.doTeleop();
 		arm.doTeleop();
 		claw.doTeleop();
 		tracker.doTeleop();

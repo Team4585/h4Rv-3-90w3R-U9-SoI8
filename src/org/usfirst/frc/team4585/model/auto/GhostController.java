@@ -21,7 +21,8 @@ public class GhostController implements HuskyClass {
 	private ArrayList<AutoTask> taskList = new ArrayList<AutoTask>();
 	
 	private int counter;
-	private int subCount;
+	private int mapTargX;
+	private int mapTargY;
 	
 	private double[] chassisInfo;
 	
@@ -30,7 +31,7 @@ public class GhostController implements HuskyClass {
 	private double[] teleTargPos;	//experemental
 	private double teleTargAngle;
 	
-	private double[] targPoint;
+	private double[] targPoint = {-1, -1};
 	private Iterator<Vertex> itr;
 	
 	private Chassis chassis;
@@ -46,7 +47,10 @@ public class GhostController implements HuskyClass {
 	private HuskyPID anglePID = new HuskyPID(1/90, 0, 0, 0);
 	private VisionCom visCom = new VisionCom();
 	private Timer timer = new Timer();
-	private HuskyPathFinder pathFinder = new HuskyPathFinder("./maps/testMap.map");
+	private HuskyPathFinder pathFinder = new HuskyPathFinder("/h4Rv-3-P0w3R-U9/src/fieldMap.map");
+//	/h4Rv-3-P0w3R-U9/src/fieldMap.map
+//	./src/fieldMap.map
+	
 	
 	
 	
@@ -92,10 +96,10 @@ public class GhostController implements HuskyClass {
 		SmartDashboard.putNumber("sonar inch", posInfo[3]);
 		
 			//normal drive (slider)
-//		chassis.giveInfo(new double[] {-driveJoy.getSliderScaled(1), driveJoy.getSliderScaled(2)});
+		chassis.giveInfo(new double[] {-driveJoy.getSliderScaled(1), driveJoy.getSliderScaled(2)});
 		
 			//non slider drive
-		chassis.giveInfo(new double[] {-driveJoy.getRawAxis(1), driveJoy.getRawAxis(2)});
+//		chassis.giveInfo(new double[] {-driveJoy.getRawAxis(1), driveJoy.getRawAxis(2)});
 		
 		
 			//climb
@@ -136,7 +140,7 @@ public class GhostController implements HuskyClass {
 		teleTargPos[0] += (joy.getSliderScaled(0) / 10);
 		teleTargPos[1] += (-joy.getSliderScaled(1) / 10);
 		driveTo(teleTargPos);
-		*/
+//		*/
 		
 		
 		
@@ -214,19 +218,24 @@ public class GhostController implements HuskyClass {
 //		/*
 		taskList.clear();
 		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {4, 4}));
+		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {4, 5}));
 //		*/
 		
 		
 		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
+		counter = 0;
+		targPoint = new double[] {-1, -1};
 		timer.reset();
 		timer.start();
-		counter = 0;
 
 	}
 
 	@Override
 	public void doAuto() {
+		
+//		driveToMaping(new double[] {17, 6});
+		
 		
 		if (timer.get() > 13) {
 			claw.giveInfo(new double[] {0});
@@ -274,10 +283,10 @@ public class GhostController implements HuskyClass {
 		*/
 		
 		
-		//driveTo(new double[] {7, 2});
+//		driveTo(new double[] {7, 2});
 		//SmartDashboard.putBoolean("at targ?", pointAt(90));
 		
-		
+//		/*
 		actuator.giveArmAngle(arm.getInfo()[0]);
 		
 		if(counter < taskList.size()) {
@@ -338,7 +347,7 @@ public class GhostController implements HuskyClass {
 				
 			}
 		}
-		
+//		*/
 		
 	}
 
@@ -379,29 +388,41 @@ public class GhostController implements HuskyClass {
 	private boolean driveToMaping(double[] I) {
 		posInfo = tracker.getInfo();
 		
-		if (targPoint == I) {
-			pathFinder.setPoints(posInfo[0], posInfo[1], I[0], I[1]);
+		if ((targPoint[0] != I[0]) || (targPoint[1] != I[1])) {
+			pathFinder.setEndPoints(posInfo[0], posInfo[1], I[0], I[1]);
 			itr = pathFinder.calculatePath().iterator();
+			targPoint = I.clone();
+			pathFinder.printPath();
+			
 		}
+		else {
+//			SmartDashboard.putBoolean("Update map", false);
+		}
+		SmartDashboard.putBoolean("Update map", (targPoint[0] != I[0]) && (targPoint[1] != I[1]));
 		
 		if (itr.hasNext()) {
 			
 			Vertex next = itr.next();
 			
-			int X = next.getX();
-			int Y = next.getY();
-			
-			if(driveTo(new double[] {X, Y})) {
-				itr.remove();
-			}
-			
-			
-			return false;
-		}
-		else {
-			return true;
+			mapTargX = next.getX();
+			mapTargY = next.getY();
 		}
 		
+		if(driveTo(new double[] {mapTargX, mapTargY})) {
+			if ((mapTargX == I[0]) && (mapTargY == I[1])) {
+				itr.remove();
+				return true;
+			}
+			else {
+				itr.remove();
+				return false;
+			}
+			
+		}
+		else {
+			return false;
+		}
+
 	}
 	
 	

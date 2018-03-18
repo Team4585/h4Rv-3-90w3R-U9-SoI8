@@ -69,7 +69,7 @@ public class Arm implements HuskyClass {
 			//arm.set(-(targAngle - pot.get()) / 90);
 			arm.set(armPid.calculate(pot.get(), targAngle) / 90.0d);
 		}
-		SmartDashboard.putNumber("arm amps", powReg.getCurrent(13));
+//		SmartDashboard.putNumber("arm amps", powReg.getCurrent(13));
 	}
 
 	@Override

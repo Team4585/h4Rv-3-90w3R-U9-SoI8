@@ -20,17 +20,18 @@ public class PositionTracker implements HuskyClass {
 	private final double LEFT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
 	private final double RIGHT_DISTANCE_PER_PULSE = -(6 * Math.PI) / 2562; //feet
 	*/
-	private final double LEFT_DISTANCE_PER_PULSE = (617.0d / 6.0d) / 13976.0d;
-	private final double RIGHT_DISTANCE_PER_PULSE = (617.0d / 6.0d) / 14032.0d;
+	private final double LEFT_DISTANCE_PER_PULSE = Constants.LEFT_DISTANCE_PER_PULSE;
+	private final double RIGHT_DISTANCE_PER_PULSE = Constants.RIGHT_DISTANCE_PER_PULSE;
 	
-	private final double ACCEL_FACTOR = 32.175197; //32.175197
+	private final double ACCEL_FACTOR = 32.175197; //32.175197 gs to feet/s^2
 	private final double ACCEL_DEAD = 0.1;
 	private final double VEL_DEAD = 0.1 * ACCEL_FACTOR;
 	
 	private Encoder leftEncoder = new Encoder(LEFT_ENCODER_PORT_A, LEFT_ENCODER_PORT_B);
 	private Encoder rightEncoder = new Encoder(RIGHT_ENCODER_PORT_A, RIGHT_ENCODER_PORT_B);
 	
-	private AnalogSonar frontSonar = new AnalogSonar(3);
+	private AnalogSonar frontSonar = new AnalogSonar(4);
+	private AnalogSonar backSonar = new AnalogSonar(7);
 	
 	private BuiltInAccelerometer accel;
 	private ADXRS450_Gyro gyro;
@@ -117,8 +118,8 @@ public class PositionTracker implements HuskyClass {
 		accelYLoc *= ACCEL_FACTOR;
 		//accelYLoc = 0;
 		
-		modAngle = ((gyro.getAngle() + 180) % 360) -180;
-		//modAngle = 30;
+		//modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		modAngle = modAngle(gyro.getAngle());
 		
 		SmartDashboard.putNumber("accel X", accelXLoc);
 		SmartDashboard.putNumber("accel Y", accelYLoc);
@@ -156,7 +157,11 @@ public class PositionTracker implements HuskyClass {
 		accelXPos += velX2 * dt;
 		accelYPos += velY2 * dt;
 		
+		SmartDashboard.putNumber("Left rate", leftEncoder.getRate());
+		SmartDashboard.putNumber("Right rate", rightEncoder.getRate());
+		
 		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+//		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
 		
 		SmartDashboard.putNumber("R encoder dist", rightEncoder.getDistance());
 		SmartDashboard.putNumber("L encoder dist", leftEncoder.getDistance());
@@ -215,7 +220,7 @@ public class PositionTracker implements HuskyClass {
 		switch (stationChooser.getSelected()){
 		
 		case 0:
-			encoderXPos = 7;
+			encoderXPos = 3;
 			break;
 			
 		case 1:
@@ -260,7 +265,11 @@ public class PositionTracker implements HuskyClass {
 		
 		accelXLoc = 0.1;
 		accelYLoc = 0;
-		modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		
+		
+		
+		//modAngle = ((gyro.getAngle() + 180) % 360) -180;
+		modAngle = modAngle(gyro.getAngle());
 		
 		SmartDashboard.putNumber("accel X", accelXLoc);
 		SmartDashboard.putNumber("accel Y", accelYLoc);
@@ -292,7 +301,11 @@ public class PositionTracker implements HuskyClass {
 		SmartDashboard.putNumber("Left pulse", leftEncoder.get());
 		SmartDashboard.putNumber("Right pulse", rightEncoder.get());
 		
+		SmartDashboard.putNumber("Left rate", leftEncoder.getRate());
+		SmartDashboard.putNumber("Right rate", rightEncoder.getRate());
+		
 		encoderVelocity = (leftEncoder.getRate() + rightEncoder.getRate()) / 2;
+//		encoderVelocity = (leftEncoder.getRate()) / 1;
 		
 		encoderXPos += Math.sin(Math.toRadians(modAngle)) * encoderVelocity * dt;
 		encoderYPos += Math.cos(Math.toRadians(modAngle)) * encoderVelocity * dt;
@@ -318,9 +331,20 @@ public class PositionTracker implements HuskyClass {
 		oldTime = timer.get();
 	}
 
+	private double modAngle(double in) {
+		double out;
+		if (in >= 0) {
+			out = ((in + 180) % 360) -180;
+		}
+		else {
+			out = -(((-in + 180) % 360) - 180);
+		}
+		return out;
+	}
+	
 	@Override
 	public double[] getInfo() {
-		return new double[] {encoderXPos, encoderYPos, modAngle, frontSonar.getInches()};
+		return new double[] {encoderXPos, encoderYPos, modAngle, frontSonar.getInches(), backSonar.getInches()};
 	}
 
 	@Override

@@ -1,55 +1,82 @@
 package org.usfirst.frc.team4585.model.auto;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.usfirst.frc.team4585.model.*;
 
+import GridNav.Vertex;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GhostController implements HuskyClass {
 	
+	private final int SWITCH_DROP_DISTANCE = 13;
+	private final int SCALE_DROP_DISTANCE = 25;
+	
 	private ArrayList<AutoTask> taskList = new ArrayList<AutoTask>();
 	
 	private int counter;
+	private int mapTargX;
+	private int mapTargY;
+	private int mapUpdate;
+	private ArrayDeque<Vertex> route;
 	
 	private double[] chassisInfo;
-	private double[] armInfo;
+	
 	private double[] clawInfo;
 	private double[] posInfo;
 	private double[] teleTargPos;	//experemental
 	private double teleTargAngle;
 	
+	private double[] targPoint = {-1, -1};
+	private Iterator<Vertex> itr;
+	
 	private Chassis chassis;
 	private Arm arm;
 	private ArmActuator actuator;
+	private Winch winch;
 	private Claw claw;
 	private PositionTracker tracker;
-	private HuskyJoy joy;
+	private HuskyJoy driveJoy;
+	private HuskyJoy weaponsJoy;
 	
 	private SendableChooser<String> firstAutoChooser = new SendableChooser<>();
 	private HuskyPID anglePID = new HuskyPID(1/90, 0, 0, 0);
 	private VisionCom visCom = new VisionCom();
+	private Timer timer = new Timer();
+	private HuskyPathFinder pathFinder = new HuskyPathFinder("/h4Rv-3-P0w3R-U9/src/fieldMap.map");
+//	/h4Rv-3-P0w3R-U9/src/fieldMap.map
+//	./src/fieldMap.map
 	
 	
-	public GhostController(Chassis Ch, Arm A, Claw Cl, PositionTracker T, ArmActuator AA, HuskyJoy J) {
+	
+	
+	public GhostController(Chassis Ch, Arm A, Claw Cl, ArmActuator AA, Winch W, PositionTracker T,  HuskyJoy DJ, HuskyJoy WJ) {
 		chassis = Ch;
 		arm = A;
 		
+		actuator = AA;
+		winch = W;
+		
 		claw = Cl;
 		tracker = T;
-		joy = J;
+		driveJoy = DJ;
+		weaponsJoy = WJ;
 		
 		
 	}
 	
 	public void dashInit() {
 		firstAutoChooser.addDefault("Switch inside", "sw_in");
-		firstAutoChooser.addObject("Switch outside", "sw_out");
+		firstAutoChooser.addObject("Switch outside (not center)", "sw_out");
 		firstAutoChooser.addObject("Scale outside", "sc_out");
+		firstAutoChooser.addObject("Auto run", "auto_run");
 		SmartDashboard.putData("Robot Auto Destenation", firstAutoChooser);
 		
 	}
@@ -67,11 +94,39 @@ public class GhostController implements HuskyClass {
 	public void doTeleop() {
 		
 		posInfo = tracker.getInfo();
+		actuator.giveArmAngle(arm.getInfo()[0]);
 		
 		SmartDashboard.putNumber("sonar inch", posInfo[3]);
 		
-			//normal drive
-		chassis.giveInfo(new double[] {-joy.getSliderScaled(1), joy.getSliderScaled(2)});
+			//normal drive (slider)
+		chassis.giveInfo(new double[] {-driveJoy.getSliderScaled(1), driveJoy.getSliderScaled(2)});
+		
+			//non slider drive
+//		chassis.giveInfo(new double[] {-driveJoy.getRawAxis(1), driveJoy.getRawAxis(2)});
+		
+		
+			//climb
+		if (weaponsJoy.getRawButton(1)) {
+			double[] actInfo = actuator.getInfo();
+			double[] winchInfo = winch.getInfo();
+			
+			
+			//(((-getRawAxis(3) + 1) / 4) + 0.5)
+			winch.giveInfo(new double[] {-(((-weaponsJoy.getRawAxis(3) + 1) / 4) + 0.5)});
+			actuator.setCliming(true);
+			//actuator.giveInfo(winchInfo);
+		}
+		else if (weaponsJoy.getRawButton(7)) {
+			winch.giveInfo(new double[] {(((-weaponsJoy.getRawAxis(3) + 1) / 4) + 0.5)});
+		}
+		else {
+			winch.giveInfo(new double[] {0});
+			actuator.setCliming(false);
+			actuator.giveArmAngle(arm.getInfo()[0]);
+		}
+		
+		
+		
 		
 		/*	//angle accel turn
 		teleTargAngle += joy.getSliderScaled(2) * 5;
@@ -88,7 +143,9 @@ public class GhostController implements HuskyClass {
 		teleTargPos[0] += (joy.getSliderScaled(0) / 10);
 		teleTargPos[1] += (-joy.getSliderScaled(1) / 10);
 		driveTo(teleTargPos);
-		*/
+//		*/
+		
+		
 		
 	}
 
@@ -97,24 +154,42 @@ public class GhostController implements HuskyClass {
 		String gameInfo = DriverStation.getInstance().getGameSpecificMessage();
 		taskList.clear();
 		
+		double x = tracker.getInfo()[0];
+		
 		switch (firstAutoChooser.getSelected()) {
 		case "sw_in":
+			taskList.add(new AutoTask(TaskType.goTo, new double[] {13, 3}));
+			taskList.add(new AutoTask(TaskType.setArmDeg, new double[] {45}));
+			taskList.add(new AutoTask(TaskType.setArmDist, new double[] {10}));
 			if (gameInfo.charAt(0) == 'L') {
-				taskList.add(new AutoTask(TaskType.goTo, new double[] {8, 9}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {8, 6}));
 			} else {
-				taskList.add(new AutoTask(TaskType.goTo, new double[] {17, 9}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {17, 6}));
 			}
 			taskList.add(new AutoTask(TaskType.pointAt, new double[] {0}));
+			taskList.add(new AutoTask(TaskType.dropCube, new double[] {0, 0}));
+			
 			
 			break;
 		
 		case "sw_out":
+			taskList.add(new AutoTask(TaskType.goTo, new double[] {x, 17}));
+			
+			
 			if (gameInfo.charAt(0) == 'L') {
-				taskList.add(new AutoTask(TaskType.goTo, new double[] {6, 13}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {4, 18}));
+				taskList.add(new AutoTask(TaskType.setArmDeg, new double[] {45}));
+				taskList.add(new AutoTask(TaskType.setArmDist, new double[] {10}));
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {5, 13}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {90, 0}));
 			} else {
+				taskList.add(new AutoTask(TaskType.goTo, new double[] {22, 18}));
+				taskList.add(new AutoTask(TaskType.setArmDeg, new double[] {45}));
+				taskList.add(new AutoTask(TaskType.setArmDist, new double[] {10}));
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {21, 13}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {-90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {-90, 0}));
 			}
 			
 			break;
@@ -123,51 +198,70 @@ public class GhostController implements HuskyClass {
 			if (gameInfo.charAt(1) == 'L') {
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {4, 26}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {90, 1}));
 			} else {
 				taskList.add(new AutoTask(TaskType.goTo, new double[] {22, 26}));
 				taskList.add(new AutoTask(TaskType.pointAt, new double[] {-90}));
+				taskList.add(new AutoTask(TaskType.dropCube, new double[] {-90, 1}));
 			}
 			
 			break;
 		
+		case "auto_run":
+			taskList.add(new AutoTask(TaskType.goTo, new double[] {x, 13}));
+			
+			break;
+			
 		default:
 			
 			break;
 		
 		}
 		
-		taskList.clear();
-		taskList.add(new AutoTask(TaskType.goTo, new double[] {7, 5}));
-		taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
-		taskList.add(new AutoTask(TaskType.getCube, new double[] {-90}));
-		taskList.add(new AutoTask(TaskType.goTo, new double[] {7, 0}));
-		
-		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
-		
 		/*
-		taskList.add(new AutoTask(TaskType.goTo, new double[] {-10, 12}));
-		//taskList.add(new AutoTask(TaskType.goTo, new double[] {4, 4}));
-		//taskList.add(new AutoTask(TaskType.goTo, new double[] {4, 0}));
-		//taskList.add(new AutoTask(TaskType.goTo, new double[] {0, 0}));
-		taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
-		taskList.add(new AutoTask(TaskType.goTo, new double[] {0, 0}));
-		taskList.add(new AutoTask(TaskType.pointAt, new double[] {0}));
+		taskList.clear();
+		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {13, 4}));
+		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {15, 7}));
+//		*/
+		
+		
 		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
-		
-		
-		taskList.add(new AutoTask(TaskType.goTo, new double[] {6, 13}));
-		taskList.add(new AutoTask(TaskType.pointAt, new double[] {90}));
-		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
-		*/
 		counter = 0;
+		targPoint[0] = -1.0d;
+		targPoint[1] = -1.0d;
+		mapUpdate = 0;
+		SmartDashboard.putNumber("mapUpdate", mapUpdate);
+		timer.reset();
+		timer.start();
 
 	}
 
 	@Override
 	public void doAuto() {
 		
-		//arm.giveInfo(new double[] {45});
+//		driveToMaping(new double[] {17, 6});
+		
+		
+		if (timer.get() > 13) {
+			claw.giveInfo(new double[] {0});
+		}
+		
+//		arm.giveInfo(new double[] {45});
+//		dropCube(new double[] {0, 0});
+		
+		//arm.giveInfo(new double[] {0});
+		/*
+		actuator.giveArmAngle(arm.getInfo()[0]);
+		actuator.giveInfo(new double[] {20});
+		*/
+		
+		/*
+		//claw.giveInfo(new double[] {1});
+		if (claw.getInfo()[0] != 1) {
+			claw.giveInfo(new double[] {1});
+		}
+		*/
 		
 		//pointAtCube();
 		//goToCube();
@@ -180,28 +274,41 @@ public class GhostController implements HuskyClass {
 		//right -14032.0
 		//left -13976.0
 		
-		/*
+		/*		calibrate encoders
 		posInfo = tracker.getInfo();
-		if ((posInfo[1]-1) < 90) { // 25 3.5 
+		if ((posInfo[1]-1) < 90) { // 25 3.5
 			chassis.giveInfo(new double[] {0.7, angleAccel(posInfo[2], 0)});
 			
-		} else if ((posInfo[1]-1) < 100) {
+		}
+		else if ((posInfo[1]-1) < 100) {
 			chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], 0)});
-		} else {
+		}
+		else {
 			chassis.giveInfo(new double[] {0, 0});
 		}
 		*/
 		
 		
-		//driveTo(new double[] {7, 2});
+//		driveTo(new double[] {7, 2});
 		//SmartDashboard.putBoolean("at targ?", pointAt(90));
 		
-		/*
+//		/*
+		actuator.giveArmAngle(arm.getInfo()[0]);
+		
 		if(counter < taskList.size()) {
+			
+			SmartDashboard.putNumber("auto item #", counter);
+			
 			switch(taskList.get(counter).getType()){
 			
 			case goTo:
 				if(driveTo(taskList.get(counter).getInfo())) {
+					counter++;
+				}
+				break;
+			
+			case goToMaping:
+				if(driveToMaping(taskList.get(counter).getInfo())) {
 					counter++;
 				}
 				break;
@@ -219,8 +326,12 @@ public class GhostController implements HuskyClass {
 				break;
 				
 			case dropCube:
-				pointAt(taskList.get(counter).getInfo()[0]);
-				counter++;
+//				claw.giveInfo(new double[] {1});
+//				counter++;
+				if (dropCube(taskList.get(counter).getInfo())) {
+					counter++;
+				}
+				
 				break;
 			
 			case setArmDeg:
@@ -230,6 +341,7 @@ public class GhostController implements HuskyClass {
 				
 			case setArmDist:
 				actuator.giveInfo(taskList.get(counter).getInfo());
+				counter++;
 				break;
 				
 			case stop:
@@ -241,7 +353,9 @@ public class GhostController implements HuskyClass {
 				
 			}
 		}
-		*/
+//		*/
+		
+		
 		
 	}
 
@@ -264,23 +378,78 @@ public class GhostController implements HuskyClass {
 		posInfo = tracker.getInfo();
 		
 		targAngle = Math.toDegrees(Math.atan2(I[0] - posInfo[0], I[1] - posInfo[1]));
-		//targAngle = 90;
 		
-		SmartDashboard.putNumber("targX", I[0] - posInfo[0]);
-		SmartDashboard.putNumber("targY", I[1] - posInfo[1]);
+		SmartDashboard.putNumber("targX", I[0]);
+		SmartDashboard.putNumber("targY", I[1]);
 		SmartDashboard.putNumber("TargAngle", targAngle);
 		
-		//buffer[0] = 0.6;
-		buffer[0] = ((Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1])))? 0:0.6;
+		buffer[0] = ((Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1]))/* || 
+				HuskyMath.gSmallAngDiff(posInfo[2], targAngle) > 90*/)? 0:0.6;
 		buffer[1] = angleAccel(posInfo[2], targAngle);
 		
 		chassis.giveInfo(buffer);
 		
-		SmartDashboard.putNumber("heading", posInfo[2]);
-		
 		
 		return (Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1]));
 	}
+	
+	private boolean driveToMaping(double[] I) {
+		posInfo = tracker.getInfo();
+		
+		if ((targPoint[0] != I[0]) || (targPoint[1] != I[1])) {
+			mapUpdate = 100;
+			
+			pathFinder.setEndPoints(posInfo[0], posInfo[1], I[0], I[1]);
+			try {
+				pathFinder.calculatePath();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			route = pathFinder.getPathList();
+			targPoint = I.clone();
+			pathFinder.printPath();
+		}
+		
+		SmartDashboard.putNumber("mapUpdate", mapUpdate);
+		mapUpdate--;
+		
+		if (!route.isEmpty()) {
+			
+			Vertex next = route.getFirst();
+			
+			mapTargX = next.getX();
+			mapTargY = next.getY();
+		}
+		
+		if(driveTo(new double[] {mapTargX, mapTargY})) {
+			if ((mapTargX == I[0]) && (mapTargY == I[1])) {
+				route.pop();
+				return true;
+			}
+			else {
+				route.pop();
+				return false;
+			}
+			
+		}
+		else {
+			return false;
+		}
+
+	}
+	
+	
+	/*private boolean driveFeet(double feet) {
+		double[] buffer = {0, 0};
+		
+		buffer[0] = ((Math.round(posInfo[0]) == Math.round(I[0])) && (Math.round(posInfo[1]) == Math.round(I[1])))? 0:0.6;
+		buffer[1] = angleAccel(posInfo[2], targAngle);
+		
+		chassis.giveInfo()
+		
+		return true;
+	}*/
 	
 	private boolean pointAt(double targAngle) {
 		double[] buffer = {0, 0};
@@ -343,14 +512,74 @@ public class GhostController implements HuskyClass {
 		
 	}
 	
-	private boolean dropCube() {
-		return true;
+	private boolean dropCube(double[] info) {
+		posInfo = tracker.getInfo();
+		
+		double angle = info[0];
+		boolean dropped = false;
+		
+		if (posInfo[2] < angle + 8 && posInfo[2] > angle -8) {
+			if (info[1] == 0) {
+				if (posInfo[3] > SWITCH_DROP_DISTANCE) {
+					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle)});
+				}
+				else {
+					chassis.giveInfo(new double[] {0, 0});
+					claw.giveInfo(new double[] {0});
+					dropped = true;
+				}
+			}
+			else {
+				if (posInfo[4] < SCALE_DROP_DISTANCE) {
+					chassis.giveInfo(new double[] {0.5, angleAccel(posInfo[2], angle)});
+				}
+				else {
+					chassis.giveInfo(new double[] {0, 0});
+					claw.giveInfo(new double[] {0});
+					dropped = true;
+				}
+			}
+		}
+		else {
+			chassis.giveInfo(new double[] {0, angleAccel(posInfo[2], angle)});
+		}
+		
+		
+		return dropped;
 	}
 	
 	private double angleAccel(double inAngle, double targAngle) {
 		double output;
 		
-		output = (targAngle - inAngle) / 90;
+//		/*
+		/*
+		if (inAngle < 0) {
+			inAngle = 360 - Math.abs(inAngle);
+		}
+		if (targAngle < 0) {
+			targAngle = 360 - Math.abs(targAngle);
+		}
+		*/
+		/*
+		double angleDiff = (targAngle - inAngle);
+		double modAngleDiff;
+		if (angleDiff >= 0) {
+			modAngleDiff = ((angleDiff + 180) % 360) - 180;
+		}
+		else {
+			modAngleDiff = -(((-angleDiff + 180) % 360) - 180);
+//			modAngleDiff = -(((-modAngleDiff + 180) % 360) - 180);
+		}
+//		*/
+		
+		double angleDiff = (targAngle - inAngle);
+		double modAngleDiff = ((angleDiff + 180) % 360) - 180;
+		
+//		double modAngleDiff = HuskyMath.gSmallAngDiff(inAngle, targAngle);
+		
+		SmartDashboard.putNumber("angle diff", modAngleDiff);
+		
+		output = (modAngleDiff / 45);
 		/*
 		if (output < 0.3 && !(output < 0.1)) {
 			output = 0.3;
@@ -359,21 +588,21 @@ public class GhostController implements HuskyClass {
 			output = -0.3;
 		}
 		
-		else */if (output < 0.4 && !(output < 0.1)) {
-			output = 0.4;
+		else */if (output < 0.5 && !(output < 0.1)) {
+			output = 0.5;
 		}
-		else if (output > -0.4 && !(output > -0.001)) {
-			output = -0.4;
+		else if (output > -0.5 && !(output > -0.1)) {
+			output = -0.5;
 		}
-		else if (Math.abs(output) < 0.001) {
+		else if (Math.abs(output) < 0.1) {
 			output = 0;
 		}
 		
-		if (output > 0.77) {
-			output = 0.77;
+		if (output > 0.7) {
+			output = 0.7;
 		}
-		else if (output < -0.77) {
-			output = -0.77;
+		else if (output < -0.7) {
+			output = -0.7;
 		}
 		
 		return output;

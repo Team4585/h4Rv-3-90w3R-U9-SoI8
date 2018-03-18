@@ -14,7 +14,7 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	private AnalogSonar sonar = new AnalogSonar(SONAR_PORT);
 	
-	private double[] info;
+	private double[] info = {0, 0};
 	
 	
 	

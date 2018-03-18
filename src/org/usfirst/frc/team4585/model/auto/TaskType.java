@@ -8,4 +8,5 @@ public enum TaskType {
 	setArmDist,
 	pointAt,
 	stop,
+	goToMaping,
 }

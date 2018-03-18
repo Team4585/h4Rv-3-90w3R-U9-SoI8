@@ -23,13 +23,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends IterativeRobot {
 	
-	private final int JOYSTICK_PORT = 0;
+	private final boolean DO_VISION = false;		//vision setting!!!!
+	
+	private final int DRIVE_PORT = 0;
+	private final int WEAPONS_PORT = 1;
 	
 	
 	private Timer timer = new Timer();
-	private HuskyJoy joy = new HuskyJoy(JOYSTICK_PORT);
-	private HuskyJoy weaponsJoy = joy;
-	private Chassis chassis = new Chassis(joy, timer);
+	
+	private HuskyJoy driveJoy = new HuskyJoy(DRIVE_PORT);
+	private HuskyJoy weaponsJoy = driveJoy;
+//	private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
+	
+	private Chassis chassis = new Chassis(driveJoy, timer);
 	private Arm arm = new Arm(weaponsJoy);
 	private Claw claw = new Claw(weaponsJoy);
 	private PositionTracker tracker = new PositionTracker(timer);
@@ -37,10 +43,10 @@ public class Robot extends IterativeRobot {
 	private Winch winch = new Winch(weaponsJoy);
 	private ArmActuator actuator = new ArmActuator(weaponsJoy);
 	
-	private Lifters lifters = new Lifters(joy, timer);
+	private Lifters lifters = new Lifters(driveJoy, timer);
 	
 
-	private GhostController marcus = new GhostController(chassis, arm, claw, tracker, actuator, joy);
+	private GhostController marcus = new GhostController(chassis, arm, claw, actuator, winch, tracker, driveJoy, weaponsJoy);
   
 	private ArduinoCom arduino = new ArduinoCom(claw);
 	private VisionCom visCom = new VisionCom();
@@ -55,7 +61,13 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		visCom.beginCamera();
+		if (DO_VISION) {
+			visCom.beginCamera();
+		}
+		else {
+//			CameraServer.getInstance().startAutomaticCapture();
+		}
+		
 		
 		tracker.dashInit();
 		marcus.dashInit();
@@ -63,7 +75,6 @@ public class Robot extends IterativeRobot {
 		arduino.setPins();
 		
 		
-		//DriverStation.getInstance().getGameSpecificMessage();
 		
 	}
 
@@ -72,13 +83,15 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		marcus.autoInit();
+		
 		chassis.autoInit();
 		arm.autoInit();
 		claw.autoInit();
 		tracker.autoInit();
 		actuator.autoInit();
 		lifters.autoInit();
+		
+		marcus.autoInit();
 
 		
 		timer.reset();
@@ -91,12 +104,15 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		marcus.doAuto();
+		
 		chassis.doAuto();
 		arm.doAuto();
 		claw.doAuto();
 		tracker.doAuto();
+		actuator.doAuto();
 		
 		arduino.setPins();
+		SmartDashboard.putNumber("sonar", tracker.getInfo()[3]);
 		
 	}
 
@@ -111,6 +127,8 @@ public class Robot extends IterativeRobot {
 		claw.teleopInit();
 		tracker.teleopInit();
 		actuator.teleopInit();
+		lifters.teleopInit();
+		
 		
 		timer.reset();
 		timer.start();
@@ -123,15 +141,19 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during teleoperated mode.
 	 */
 	@Override
+	@SuppressWarnings("reportJoystickUnpluggedWarning")
 	public void teleopPeriodic() {
 		marcus.doTeleop();
-
-		chassis.doTeleop();	
+		
+		chassis.doTeleop();
 		arm.doTeleop();
 		claw.doTeleop();
 		tracker.doTeleop();
 		actuator.doTeleop();
+		lifters.doTeleop();
+		winch.doTeleop();
 		
+		SmartDashboard.putNumber("sonar", tracker.getInfo()[3]);
 		arduino.setPins();
 		/*
 		if (timer.get() - oldTime > 1) {
@@ -157,6 +179,14 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void disabledPeriodic() {
+		if (DO_VISION) {
+			visCom.updateExposure();
+		}
+		SmartDashboard.putNumber("sonar", tracker.getInfo()[3]);
+		SmartDashboard.putNumber("arm pot", arm.getInfo()[0]);
+		SmartDashboard.putNumber("extend pot", actuator.getInfo()[0]);
+		
+		
 		arduino.setPins();
 	}
 }

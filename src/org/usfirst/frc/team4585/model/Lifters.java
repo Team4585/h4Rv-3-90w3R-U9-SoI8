@@ -3,13 +3,13 @@ package org.usfirst.frc.team4585.model;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Lifters implements HuskyClass {
 	
-	private final int JOY = 1;
-	private final int SECONDS = 105;
+	private final int SECONDS = 0;
 	
-	private final int LIFTERS_PORT = 3;
+	private final int LIFTERS_PORT = 10;
 	private Servo lifters = new Servo(LIFTERS_PORT);
 	
 	private Joystick joy;
@@ -23,23 +23,23 @@ public class Lifters implements HuskyClass {
 
 	@Override
 	public void teleopInit() {
-		// TODO Auto-generated method stub
+		lifters.setAngle(30);
+		SmartDashboard.putNumber("lift", lifters.getAngle());
 
 	}
 
 	@Override
 	public void doTeleop() {
-		if (timer.get() >= SECONDS && joy.getRawButton(JOY) == true) {
+		if (/*timer.get() >= SECONDS && */joy.getRawButton(2)) {
 			lifters.setAngle(0);
 		}
-		// TODO Auto-generated method stub
+		SmartDashboard.putNumber("lift", lifters.getAngle());
 
 	}
 
 	@Override
 	public void autoInit() {		
 		    lifters.setAngle(30);
-		// TODO Auto-generated method stub
 
 	}
 

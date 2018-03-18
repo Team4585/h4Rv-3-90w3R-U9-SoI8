@@ -2,8 +2,10 @@ package org.usfirst.frc.team4585.model;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+@SuppressWarnings("reportJoystickUnpluggedWarning")
 public class HuskyJoy extends Joystick {
-
+	
+	
 	public HuskyJoy(int port) {
 		super(port);
 		// TODO Auto-generated constructor stub

@@ -16,83 +16,13 @@ public class HuskyPathFinder extends GridNav{
 	
 	ArrayDeque<Vertex> bestroute;
 	
+	String mapFilePath;
+	
 	
 	public HuskyPathFinder(String mapFilePath) {
+		this.mapFilePath = mapFilePath;
 		
-		/*
-//		File dotMapFile = new File("./maps/testMap.map");
-		File dotMapFile = new File(mapFilePath);
-		
-		
-		try {
-			loadCharMatrix(dotMapToCharMatrix(dotMapFile));
-			System.out.println("Loaded map!");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-//		*/
-		
-		/*
-		final char c = '.';
-		final char b = 'T';
-		char[][] charMatrix = {
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				{c, c, c, c, c, c, c, c, c, c},
-				
-		};
-		
-		try {
-			loadCharMatrix(charMatrix);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-//		*/
-		
-		String map = "TTTTTTTTTTTTTTTTTTTTTTTTTTT\r\n" + 
-				 "TT.......................TT\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-			 	 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-			 	 "T.........................T\r\n" + 
-			 	 "T.........................T\r\n" + 
-				 "T.........................T\r\n" + 
-				 "T.........................T";
-	String mapArr[] = map.split("\r\n");
-	char[][] charMatrix = new char[29][27];
-	for(int i = 0; i < mapArr.length; i++) {
-		charMatrix[i] = mapArr[i].toCharArray();
-	}
-		
-		try {
-			loadCharMatrix(charMatrix);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		loadMap();
 		
 	}
 	
@@ -103,13 +33,19 @@ public class HuskyPathFinder extends GridNav{
 		this.y1 = (int) Math.round(y1);
 	}
 	
-	public ArrayDeque<Vertex> calculatePath() {
+	public ArrayDeque<Vertex> calculatePath() throws Exception{
+		
+		loadMap();
+		
 		int[] start = {y0, x0};
 		int[] goal = {y1, x1};
 		bestroute = route(start, goal, Options.ASTAR, Options.DIAGONAL_HEURISTIC, true);
+		if (bestroute == null) {
+			throw new Exception("Route creation failed!");
+		}
 		
-		bestroute = clearLinePoints(bestroute);
-		bestroute = clearClosePoints(bestroute);
+//		bestroute = clearLinePoints(bestroute);
+//		bestroute = clearClosePoints(bestroute);
 		
 		bestroute.remove();
 		
@@ -180,6 +116,88 @@ public class HuskyPathFinder extends GridNav{
 			}
 			System.out.println();
 		}
+		
+		
+	}
+	
+	private boolean loadMap() {
+		
+		/*
+//		File dotMapFile = new File("./maps/testMap.map");
+		File dotMapFile = new File(mapFilePath);
+		
+		
+		try {
+			loadCharMatrix(dotMapToCharMatrix(dotMapFile));
+			System.out.println("Loaded map!");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//		*/
+		
+		/*
+		final char c = '.';
+		final char b = 'T';
+		char[][] charMatrix = {
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				{c, c, c, c, c, c, c, c, c, c},
+				
+		};
+		
+		try {
+			loadCharMatrix(charMatrix);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//		*/
+		
+		String map = "TTTTTTTTTTTTTTTTTTTTTTTTTTT\r\n" + 
+				 	 "TT.......................TT\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........TTTTTTT.........T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........TTTTTTT.........T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T..........TTTTT..........T\r\n" + 
+				 	 "T..........T...T..........T\r\n" + 
+				 	 "T..........T...T..........T\r\n" + 
+				 	 "T......TTTTTTTTTTTTT......T\r\n" + 
+				 	 "T......T...........T......T\r\n" + 
+				 	 "T......T...........T......T\r\n" + 
+				 	 "T......T...........T......T\r\n" + 
+				 	 "T......TTTTTTTTTTTTT......T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T\r\n" + 
+				 	 "T.........................T";
+		String mapArr[] = map.split("\r\n");
+		char[][] charMatrix = new char[29][27];
+		for(int i = 0; i < mapArr.length; i++) {
+			charMatrix[i] = mapArr[i].toCharArray();
+		}
+			
+		try {
+			loadCharMatrix(charMatrix);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return true;
 	}
 	
 }

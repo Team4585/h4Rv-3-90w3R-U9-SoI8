@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4585.model.auto;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -23,6 +24,8 @@ public class GhostController implements HuskyClass {
 	private int counter;
 	private int mapTargX;
 	private int mapTargY;
+	private int mapUpdate;
+	private ArrayDeque<Vertex> route;
 	
 	private double[] chassisInfo;
 	
@@ -215,17 +218,20 @@ public class GhostController implements HuskyClass {
 		
 		}
 		
-//		/*
+		/*
 		taskList.clear();
-		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {4, 4}));
-		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {4, 5}));
+		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {13, 4}));
+		taskList.add(new AutoTask(TaskType.goToMaping, new double[] {15, 7}));
 //		*/
 		
 		
 		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
 		counter = 0;
-		targPoint = new double[] {-1, -1};
+		targPoint[0] = -1.0d;
+		targPoint[1] = -1.0d;
+		mapUpdate = 0;
+		SmartDashboard.putNumber("mapUpdate", mapUpdate);
 		timer.reset();
 		timer.start();
 
@@ -349,6 +355,8 @@ public class GhostController implements HuskyClass {
 		}
 //		*/
 		
+		
+		
 	}
 
 
@@ -389,20 +397,26 @@ public class GhostController implements HuskyClass {
 		posInfo = tracker.getInfo();
 		
 		if ((targPoint[0] != I[0]) || (targPoint[1] != I[1])) {
+			mapUpdate = 100;
+			
 			pathFinder.setEndPoints(posInfo[0], posInfo[1], I[0], I[1]);
-			itr = pathFinder.calculatePath().iterator();
+			try {
+				pathFinder.calculatePath();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			route = pathFinder.getPathList();
 			targPoint = I.clone();
 			pathFinder.printPath();
-			
 		}
-		else {
-//			SmartDashboard.putBoolean("Update map", false);
-		}
-		SmartDashboard.putBoolean("Update map", (targPoint[0] != I[0]) && (targPoint[1] != I[1]));
 		
-		if (itr.hasNext()) {
+		SmartDashboard.putNumber("mapUpdate", mapUpdate);
+		mapUpdate--;
+		
+		if (!route.isEmpty()) {
 			
-			Vertex next = itr.next();
+			Vertex next = route.getFirst();
 			
 			mapTargX = next.getX();
 			mapTargY = next.getY();
@@ -410,11 +424,11 @@ public class GhostController implements HuskyClass {
 		
 		if(driveTo(new double[] {mapTargX, mapTargY})) {
 			if ((mapTargX == I[0]) && (mapTargY == I[1])) {
-				itr.remove();
+				route.pop();
 				return true;
 			}
 			else {
-				itr.remove();
+				route.pop();
 				return false;
 			}
 			

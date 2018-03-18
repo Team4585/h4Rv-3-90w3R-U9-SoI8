@@ -32,8 +32,8 @@ public class Robot extends IterativeRobot {
 	private Timer timer = new Timer();
 	
 	private HuskyJoy driveJoy = new HuskyJoy(DRIVE_PORT);
-//	private HuskyJoy weaponsJoy = driveJoy;
-	private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
+	private HuskyJoy weaponsJoy = driveJoy;
+//	private HuskyJoy weaponsJoy = new HuskyJoy(WEAPONS_PORT);
 	
 	private Chassis chassis = new Chassis(driveJoy, timer);
 	private Arm arm = new Arm(weaponsJoy);
@@ -141,6 +141,7 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during teleoperated mode.
 	 */
 	@Override
+	@SuppressWarnings("reportJoystickUnpluggedWarning")
 	public void teleopPeriodic() {
 		marcus.doTeleop();
 		
